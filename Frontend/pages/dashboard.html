@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard — Lagerverwaltung</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../css/base.css">
+  <link rel="stylesheet" href="../css/layout.css">
+  <link rel="stylesheet" href="../css/components.css">
+</head>
+<body>
+<div class="app-layout">
+
+  <!-- Topbar -->
+  <header class="topbar">
+    <div class="topbar-brand">
+      <div class="logo-icon">📦</div>
+      Lagerverwaltung
+    </div>
+    <div class="topbar-right">
+      <button class="notif-btn" onclick="location.href='inventory.html'">
+        🔔 Warnungen
+        <span class="notif-count hidden" id="notif-count">0</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- Sidebar -->
+  <nav class="sidebar">
+    <div class="sidebar-section-label">Übersicht</div>
+    <a class="nav-item active" href="dashboard.html"><span class="nav-icon">🏠</span> Dashboard</a>
+
+    <div class="sidebar-section-label">Verwaltung</div>
+    <a class="nav-item" href="tasks.html"><span class="nav-icon">📋</span> Aufgaben</a>
+    <a class="nav-item" href="inventory.html">
+      <span class="nav-icon">📦</span> Inventar
+      <span class="badge badge-danger nav-badge hidden" id="nav-inv-badge"></span>
+    </a>
+    <a class="nav-item" href="timeline.html"><span class="nav-icon">🛒</span> Kaufplan</a>
+  </nav>
+
+  <!-- Main -->
+  <main class="main-content">
+    <div class="page-header">
+      <div class="page-header-left">
+        <h1>Dashboard</h1>
+        <p>Übersicht über alle Aufgaben und den Lagerbestand</p>
+      </div>
+    </div>
+
+    <div class="stats-row">
+      <div class="stat-card">
+        <div class="stat-label">Aufgaben</div>
+        <div class="stat-value" id="stat-tasks">—</div>
+        <div class="stat-sub">Gesamt</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Inventar-Items</div>
+        <div class="stat-value" id="stat-inv">—</div>
+        <div class="stat-sub">In der Datenbank</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Warnungen</div>
+        <div class="stat-value text-danger" id="stat-alerts">—</div>
+        <div class="stat-sub">Unter eiserner Grenze</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Kaufaufträge</div>
+        <div class="stat-value text-warning" id="stat-buys">—</div>
+        <div class="stat-sub">Fehlende Bestände</div>
+      </div>
+    </div>
+
+    <div id="dash-alert-banner"></div>
+
+    <div class="dashboard-grid">
+      <div>
+        <div class="flex justify-between items-center" style="margin-bottom:12px">
+          <h2>Nächste Aufgaben</h2>
+          <a href="tasks.html" style="font-size:12px">Alle →</a>
+        </div>
+        <div id="dash-upcoming"></div>
+      </div>
+      <div>
+        <div class="flex justify-between items-center" style="margin-bottom:12px">
+          <h2>Dringender Kaufbedarf</h2>
+          <a href="timeline.html" style="font-size:12px">Kaufplan →</a>
+        </div>
+        <div id="dash-buys"></div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<div id="toast-container"></div>
+
+<script src="../js/store/store.js"></script>
+<script src="../js/utils/dom.js"></script>
+<script src="../js/features/dashboard.js"></script>
+</body>
+</html>
