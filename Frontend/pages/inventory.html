@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!OCTYPE html>
 <html lang="de">
 <head>
   <meta charset="UTF-8">
@@ -73,7 +73,7 @@
     
     <div style="margin-top:16px;display:flex;gap:12px;flex-wrap:wrap;padding:12px;background:var(--bg-card);border-radius:8px">
       <button class="btn-ghost btn-sm" onclick="if(confirm('Wirklich alle Daten zurücksetzen?')){localStorage.clear();location.reload();}"> Daten zurücksetzen</button>
-      <button class="btn-ghost btn-sm" onclick="const data=exportData();const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='lagerdaten_'+new Date().toISOString().slice(0,10)+'.json';a.click();">📤 Export</button>
+      <button class="btn-ghost btn-sm" onclick="const data=exportData();const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='lagerdaten_'+new Date().toISOString().slice(0,10)+'.json';a.click();">Export</button>
       <button class="btn-ghost btn-sm" onclick="document.getElementById('import-file').click();">Import</button>
       <input type="file" id="import-file" accept=".json" style="display:none" onchange="const file=this.files[0];const reader=new FileReader();reader.onload=(e)=>{try{const data=JSON.parse(e.target.result);importData(data);showToast('Import erfolgreich','Daten wurden importiert.','success');}catch(err){showToast('Import fehlgeschlagen',err.message,'danger');}};reader.readAsText(file);">
     </div>

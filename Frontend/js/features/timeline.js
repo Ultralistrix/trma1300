@@ -38,7 +38,7 @@ function renderTimeline() {
       </div>`).join('');
 
     const typeBadge = isMinStock 
-      ? `<span class="badge badge-danger" style="margin-left:8px">⚠️ Auffüllen</span>`
+      ? `<span class="badge badge-danger" style="margin-left:8px">Auffüllen</span>`
       : '';
 
     return `
