@@ -1,10 +1,4 @@
 package com.trma1300;
-
-import com.sun.net.httpserver.Headers;
-import com.sun.net.httpserver.HttpExchange;
-import com.sun.net.httpserver.HttpHandler;
-import com.sun.net.httpserver.HttpServer;
-
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -16,6 +10,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import com.sun.net.httpserver.Headers;
+import com.sun.net.httpserver.HttpExchange;
+import com.sun.net.httpserver.HttpHandler;
+import com.sun.net.httpserver.HttpServer;
 
 public class Main {
     public static void main(String[] args) throws Exception {
@@ -38,7 +36,7 @@ public class Main {
                                 fakeDbContent = reader.lines().collect(Collectors.joining("\n"));
                             }
                         } else {
-                            System.out.println("WARNUNG: fakedb.md wurde nicht gefunden!");
+                            System.out.println("WARNUNG: Database was not found!");
                         }
                     } catch (Exception e) {
                         System.out.println("Fehler beim Lesen der Datei: " + e.getMessage());
