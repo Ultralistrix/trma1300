@@ -141,15 +141,25 @@ function openTaskDetail(id) {
 function completeTask(taskId) {
   const task = Tasks.getById(taskId);
   if (!task) return;
-  
+
+  const consumedItems = [];
   task.inventoryItems.forEach(({ itemId, quantity }) => {
     const item = Inventory.getById(itemId);
-    if (item && !item.reusable) {
+    if (!item) return;
+    if (!item.reusable) {
       const newStock = Math.max(0, item.stock - quantity);
       Inventory.updateStock(itemId, newStock);
+      consumedItems.push({ itemId, itemName: item.name, unit: item.unit, quantity });
     }
   });
-  
+
+  CompletionLog.add({
+    taskId: task.id,
+    taskName: task.name,
+    responsible: task.responsible,
+    consumedItems,
+  });
+
   Tasks.delete(taskId);
   renderTaskList();
   updateNavBadge();

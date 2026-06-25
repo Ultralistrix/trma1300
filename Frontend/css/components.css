@@ -206,3 +206,90 @@ td { padding: 12px 16px; font-size: 13px; vertical-align: middle; }
 .timeline-buy-item.min-stock-item span:first-child {
   filter: grayscale(0);
 }
+
+/* View Tabs */
+.view-tabs {
+  display: flex;
+  gap: 4px;
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 4px;
+  width: fit-content;
+}
+.view-tab {
+  background: transparent;
+  color: var(--text2);
+  border: none;
+  border-radius: var(--radius);
+  padding: 6px 16px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+}
+.view-tab:hover { background: var(--bg3); color: var(--text); opacity: 1; }
+.view-tab.active { background: var(--accent); color: #fff; }
+
+/* Monthly Forecast */
+.monthly-card {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  margin-bottom: 12px;
+  overflow: hidden;
+}
+.monthly-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 14px 18px;
+  background: var(--bg3);
+  border-bottom: 1px solid var(--border);
+}
+.monthly-card-body {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0;
+}
+@media (max-width: 700px) { .monthly-card-body { grid-template-columns: 1fr; } }
+.monthly-section {
+  padding: 14px 18px;
+  border-right: 1px solid var(--border);
+}
+.monthly-section:last-child { border-right: none; }
+.monthly-section-label {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--text3);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin-bottom: 8px;
+}
+.monthly-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 5px 0;
+  border-bottom: 1px solid var(--border);
+  font-size: 13px;
+}
+.monthly-item:last-child { border-bottom: none; }
+.monthly-item-name { flex: 1; }
+.monthly-item-qty { font-family: 'JetBrains Mono', monospace; font-size: 12px; font-weight: 600; min-width: 60px; text-align: right; }
+
+/* Completion History */
+.history-entry {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 14px 18px;
+  margin-bottom: 10px;
+}
+.history-entry-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 4px;
+}

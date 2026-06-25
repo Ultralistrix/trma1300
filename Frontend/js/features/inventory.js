@@ -48,11 +48,15 @@ function renderInventoryTable() {
   if (!tbody) return;
 
   if (filtered.length === 0) {
-    tbody.innerHTML = `<tr><td colspan="7" style="text-align:center;color:var(--text3);padding:40px">Keine Einträge gefunden</td></tr>`;
+    tbody.innerHTML = `<tr><td colspan="8" style="text-align:center;color:var(--text3);padding:40px">Keine Einträge gefunden</td></tr>`;
     return;
   }
 
-  tbody.innerHTML = filtered.map(item => `
+  tbody.innerHTML = filtered.map(item => {
+    const reserved = Inventory.getReservedForItem(item.id);
+    const available = Math.max(0, item.stock - reserved);
+    const overReserved = reserved > item.stock;
+    return `
     <tr>
       <td><strong>${item.name}</strong></td>
       <td><span class="category-tag">${item.category}</span></td>
@@ -61,8 +65,15 @@ function renderInventoryTable() {
         ${item.reusable ? 'Ja' : 'Nein'}
       </td>
       <td>${stockBarHTML(item)}</td>
+      <td class="font-mono" style="font-size:12px">
+        ${reserved > 0
+          ? `<span class="${overReserved ? 'text-danger' : 'text-warning'}" title="Reserviert für Aufgaben">${reserved} ${item.unit}</span>
+             <span class="text-muted" style="font-size:11px;display:block">frei: ${available} ${item.unit}</span>`
+          : `<span class="text-muted">—</span>`
+        }
+      </td>
       <td class="font-mono" style="color:var(--text3)">${item.minStock} ${item.unit}</td>
-      <td>${stockBadgeHTML(item)}</td>
+      <td>${stockBadgeHTML(item)}${overReserved ? ` <span class="badge badge-danger" style="margin-left:4px" title="Reservierter Bedarf übersteigt Bestand">Überbucht</span>` : ''}</td>
       <td>
         <div class="flex gap-2">
           <button class="btn-ghost btn-sm" onclick="openEditItem('${item.id}')"> Bearbeiten</button>
@@ -70,8 +81,8 @@ function renderInventoryTable() {
           <button class="btn-ghost btn-sm text-danger" onclick="deleteItem('${item.id}')"></button>
         </div>
       </td>
-    </tr>
-  `).join('');
+    </tr>`;
+  }).join('');
 }
 
 function renderCategoryFilter() {

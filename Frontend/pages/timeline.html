@@ -46,17 +46,49 @@
 
     <div class="stats-row" id="timeline-stats"></div>
 
-    <div class="card" style="margin-bottom:16px;padding:14px 18px;background:rgba(79,142,247,0.06);border-color:rgba(79,142,247,0.2)">
-      <div class="flex items-center gap-3">
-        <span>ℹ️</span>
-        <span style="font-size:13px;color:var(--text2)">
-          Der Kaufplan zeigt alle Aufgaben bei denen der aktuelle Bestand nicht ausreicht.
-          Items werden nach Startdatum der Aufgabe sortiert. Verbrauchbare Items werden beim Abschluss vom Bestand abgezogen.
-        </span>
-      </div>
+    <div class="view-tabs" style="margin-bottom:16px">
+      <button class="view-tab active" id="tab-kaufplan" onclick="switchTab('kaufplan')">Kaufplan</button>
+      <button class="view-tab" id="tab-monat" onclick="switchTab('monat')">Monatsübersicht</button>
+      <button class="view-tab" id="tab-history" onclick="switchTab('history')">Verbrauchshistorie</button>
     </div>
 
-    <div id="timeline-container"></div>
+    <div id="view-kaufplan">
+      <div class="card" style="margin-bottom:16px;padding:14px 18px;background:rgba(79,142,247,0.06);border-color:rgba(79,142,247,0.2)">
+        <div class="flex items-center gap-3">
+          <span>ℹ️</span>
+          <span style="font-size:13px;color:var(--text2)">
+            Der Kaufplan zeigt alle Aufgaben bei denen der aktuelle Bestand nicht ausreicht.
+            Items werden nach Startdatum der Aufgabe sortiert. Verbrauchbare Items werden beim Abschluss vom Bestand abgezogen.
+          </span>
+        </div>
+      </div>
+      <div id="timeline-container"></div>
+    </div>
+
+    <div id="view-monat" style="display:none">
+      <div class="card" style="margin-bottom:16px;padding:14px 18px;background:rgba(79,142,247,0.06);border-color:rgba(79,142,247,0.2)">
+        <div class="flex items-center gap-3">
+          <span>📅</span>
+          <span style="font-size:13px;color:var(--text2)">
+            Übersicht wie viel Ressourcen pro Monat <strong>verbraucht</strong> (nicht wiederverwendbar) bzw. <strong>verwendet</strong> (wiederverwendbar, wird zurückgegeben) werden.
+            Hilft bei der monatlichen Planung im Ehrenamt.
+          </span>
+        </div>
+      </div>
+      <div id="monthly-container"></div>
+    </div>
+
+    <div id="view-history" style="display:none">
+      <div class="card" style="margin-bottom:16px;padding:14px 18px;background:rgba(79,142,247,0.06);border-color:rgba(79,142,247,0.2)">
+        <div class="flex items-center gap-3">
+          <span>📋</span>
+          <span style="font-size:13px;color:var(--text2)">
+            Protokoll aller abgeschlossenen Aufgaben mit dem tatsächlichen Verbrauch. Hilft langfristig Muster zu erkennen.
+          </span>
+        </div>
+      </div>
+      <div id="history-container"></div>
+    </div>
   </main>
 </div>
 

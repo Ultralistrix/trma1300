@@ -7,6 +7,7 @@ const KEYS = {
   inventory: 'lv_inventory',
   tasks: 'lv_tasks',
   categories: 'lv_categories',
+  completionLog: 'lv_completion_log',
 };
 
 // ── Standarddaten beim ersten Start ──────────────────────────────────────────
@@ -120,6 +121,12 @@ const Inventory = {
     }
     return false;
   },
+  getReservedForItem(itemId) {
+    return Tasks.getAll().reduce((total, task) => {
+      const entry = task.inventoryItems.find(i => i.itemId === itemId);
+      return total + (entry ? entry.quantity : 0);
+    }, 0);
+  },
   isBelowMin(id) {
     const item = this.getById(id);
     return item ? item.stock <= item.minStock : false;
@@ -223,6 +230,24 @@ const Categories = {
   }
 };
 
+// ── Abschluss-Log API ─────────────────────────────────────────────────────────
+
+const CompletionLog = {
+  getAll() { return getAll(KEYS.completionLog); },
+  add(entry) {
+    const all = this.getAll();
+    all.push({ ...entry, id: genId('cl'), loggedAt: new Date().toISOString() });
+    saveAll(KEYS.completionLog, all);
+  },
+  getLastN(n) {
+    const all = this.getAll();
+    return all.slice(-n).reverse();
+  },
+  clear() {
+    saveAll(KEYS.completionLog, []);
+  }
+};
+
 // ── Kaufplan-Logik ────────────────────────────────────────────────────────────
 
 function buildPurchasePlan(includeMinStockAlerts = true) {
@@ -299,6 +324,40 @@ function buildPurchasePlan(includeMinStockAlerts = true) {
   return plan;
 }
 
+// ── Monatliche Verbrauchsvorhersage ───────────────────────────────────────────
+
+function buildMonthlyForecast() {
+  const tasks = Tasks.getSorted();
+  const monthMap = {};
+
+  tasks.forEach(task => {
+    const month = task.startDate ? task.startDate.slice(0, 7) : null;
+    if (!month) return;
+    if (!monthMap[month]) monthMap[month] = { consumed: {}, reusable: {} };
+
+    task.inventoryItems.forEach(({ itemId, quantity }) => {
+      const item = Inventory.getById(itemId);
+      if (!item) return;
+      const target = item.reusable ? monthMap[month].reusable : monthMap[month].consumed;
+      target[itemId] = (target[itemId] || 0) + quantity;
+    });
+  });
+
+  return Object.entries(monthMap)
+    .sort(([a], [b]) => a.localeCompare(b))
+    .map(([month, data]) => ({
+      month,
+      consumed: Object.entries(data.consumed)
+        .map(([itemId, quantity]) => ({ item: Inventory.getById(itemId), itemId, quantity }))
+        .filter(e => e.item),
+      reusable: Object.entries(data.reusable)
+        .map(([itemId, quantity]) => ({ item: Inventory.getById(itemId), itemId, quantity }))
+        .filter(e => e.item),
+      totalConsumed: Object.values(data.consumed).reduce((s, v) => s + v, 0),
+      totalReusable: Object.values(data.reusable).reduce((s, v) => s + v, 0),
+    }));
+}
+
 // ── Daten-Export/Import ──────────────────────────────────────────────────────
 
 function exportData() {
@@ -306,6 +365,7 @@ function exportData() {
     inventory: Inventory.getAll(),
     tasks: Tasks.getAll(),
     categories: Categories.getAll(),
+    completionLog: CompletionLog.getAll(),
     exportedAt: new Date().toISOString()
   };
 }
@@ -314,6 +374,7 @@ function importData(data) {
   if (data.inventory) saveAll(KEYS.inventory, data.inventory);
   if (data.tasks) saveAll(KEYS.tasks, data.tasks);
   if (data.categories) saveAll(KEYS.categories, data.categories);
+  if (data.completionLog) saveAll(KEYS.completionLog, data.completionLog);
   window.dispatchEvent(new CustomEvent('storeChange', { detail: { key: 'all' } }));
 }
 
