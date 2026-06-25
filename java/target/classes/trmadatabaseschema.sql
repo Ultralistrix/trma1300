@@ -24,6 +24,7 @@ CREATE TABLE inventory (
 CREATE TABLE allocation (
     task INTEGER,
     inventory INTEGER,
+    PRIMARY KEY(task, inventory),
     FOREIGN KEY(task) REFERENCES tasks(id),
     FOREIGN KEY(inventory) REFERENCES inventory(id)
 )
