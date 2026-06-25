@@ -8,10 +8,9 @@ import java.sql.Statement;
 
 
 public class ReadDatabase {
+    private static String jdbcUrl = "jdbc:sqlite:java/src/main/resources/trmadatabase.db";
+
     public static void main() {
-        String jdbcUrl = "jdbc:sqlite:java/src/main/resources/trmadatabase.db";
-
-
         try {
             Connection connection = DriverManager.getConnection(jdbcUrl);
             if (connection == null) return;
@@ -37,5 +36,56 @@ public class ReadDatabase {
             e.printStackTrace();
         }
 
+    }
+
+    public static ResultSet getAllTasks(){
+        try{
+            Connection connection = DriverManager.getConnection(jdbcUrl);
+            if(connection == null) return null;
+
+            Statement statement = connection.createStatement();
+            String selectQuery = "SELECT * FROM tasks";
+            ResultSet result = statement.executeQuery(selectQuery);
+
+            return result;
+
+        }catch (SQLException e){
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    public static ResultSet getAllInvItems(){
+        try{
+            Connection connection = DriverManager.getConnection(jdbcUrl);
+            if(connection == null) return null;
+
+            Statement statement = connection.createStatement();
+            String selectQuery = "SELECT * FROM inventory";
+            ResultSet result = statement.executeQuery(selectQuery);
+
+            return result;
+
+        }catch (SQLException e){
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+        public static ResultSet getAllConnections(){
+        try{
+            Connection connection = DriverManager.getConnection(jdbcUrl);
+            if(connection == null) return null;
+
+            Statement statement = connection.createStatement();
+            String selectQuery = "SELECT * FROM allocation";
+            ResultSet result = statement.executeQuery(selectQuery);
+
+            return result;
+
+        }catch (SQLException e){
+            e.printStackTrace();
+            return null;
+        }
     }
 }
