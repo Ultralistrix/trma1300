@@ -28,3 +28,6 @@ bin/
 
 ### Mac OS ###
 .DS_Store
+
+### DB ###
+java/src/main/resources/trmadatabase.db
