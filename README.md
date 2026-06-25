@@ -42,7 +42,7 @@ Before running the project, ensure you have the following installed on your host
 ### 1. Clone the Repository
 
 ```bash
-git clone <your-repository-url>
+git clone github.com/Ultralistrix/trma1300/
 cd TRMA1300
 ```
 
@@ -54,7 +54,7 @@ Navigate to the `docker` directory and start the containers in detached mode:
 
 ```bash
 cd docker
-docker compose up -d --build
+docker compose up -d
 ```
 
 > **Note:** The `--build` flag ensures the Java backend is compiled freshly via the multi-stage Dockerfile before starting.
