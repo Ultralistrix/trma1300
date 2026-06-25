@@ -9,6 +9,7 @@ CREATE TABLE tasks (
     dependency INTEGER,
     FOREIGN KEY(dependency) REFERENCES tasks(id)
 );
+
 CREATE TABLE inventory (
     id INTEGER PRIMARY KEY,
     name TEXT,
@@ -19,3 +20,10 @@ CREATE TABLE inventory (
     stock INTEGER,
     capacity INTEGER
 );
+
+CREATE TABLE allocation (
+    task INTEGER,
+    inventory INTEGER,
+    FOREIGN KEY(task) REFERENCES tasks(id),
+    FOREIGN KEY(inventory) REFERENCES inventory(id)
+)
