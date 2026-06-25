@@ -4,25 +4,35 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.sql.Types;
 
 public class WriteDatabase {
-    public static void main() {
-        String jdbcUrl = "jdbc:sqlite:java/src/main/resources/trmadatabase.db";
+    private static final String DB_URL = "jdbc:sqlite:java/src/main/resources/trmadatabase.db";
+    public static void addTask(String name, String description, String assigned, int priority, String startdate, String enddate, Integer dependency) {
+    String insertQuery = "INSERT INTO tasks (name, description, assigned, priority, startdate, enddate, dependency) VALUES (?, ?, ?, ?, ?, ?, ?)";
+        try (Connection connection = DriverManager.getConnection(DB_URL);
+             PreparedStatement pstmt = connection.prepareStatement(insertQuery)) {
 
-        try {
-            Connection connection = DriverManager.getConnection(jdbcUrl);
+            pstmt.setString(1, name);
+            pstmt.setString(2, description);
+            pstmt.setString(3, assigned);
+            pstmt.setInt(4, priority);
+            pstmt.setString(5, startdate);
+            pstmt.setString(6, enddate);
+            
+            // If dependency is null, set it to SQL NULL; otherwise, set the integer value
+            if (dependency != null) {
+                pstmt.setInt(7, dependency);
+            } else {
+                pstmt.setNull(7, Types.INTEGER);
+            }
+            
+            pstmt.executeUpdate();
+            System.out.println("Successfully inserted task: " + name);
 
-            String insertQuery = "INSERT INTO employees (first_name, last_name, age) VALUES (?, ?, ?)";
-            PreparedStatement preparedStatement = connection.prepareStatement(insertQuery);
-            preparedStatement.setString(1, "John");
-            preparedStatement.setString(2, "Doe");
-            preparedStatement.setInt(3, 30);
-            preparedStatement.executeUpdate();
-
-            preparedStatement.close();
-            connection.close();
         } catch (SQLException e) {
-            e.printStackTrace();
+            System.out.println("Database Write Error (Tasks): " + e.getMessage());
         }
+        
     }
 }
