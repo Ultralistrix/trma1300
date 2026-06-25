@@ -148,9 +148,22 @@ function quickUpdateStock(id) {
 
   openModal('Bestand aktualisieren', bodyHTML, [
     el('button', { class: 'btn-secondary', onclick: closeModal }, 'Abbrechen'),
-    el('button', { class: 'btn-primary', onclick: () => {
+    el('button', { class: 'btn-primary', onclick: async () => {
       const val = parseInt(qs('#q-stock')?.value) || 0;
-      Inventory.updateStock(id, val);
+      
+      // Lokal updaten
+      item.stock = val;
+      Inventory.save(item);
+      
+      // NEU: Backend updaten
+      try {
+        await fetch('http://localhost:8081/api/add-inventory', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(item)
+        });
+      } catch(e) { console.error("Backend Fehler:", e); }
+
       closeModal();
       renderAll();
       showToast('Bestand aktualisiert', `${item.name}: ${val} ${item.unit}`, 'success');
@@ -225,7 +238,8 @@ function addNewCategory() {
   }
 }
 
-function saveItemForm(existingId) {
+// NEU: Diese Funktion ist jetzt 'async' und funkt an das Java Backend!
+async function saveItemForm(existingId) {
   const name = qs('#f-name')?.value.trim();
   const category = qs('#f-category')?.value;
   const stock = parseInt(qs('#f-stock')?.value) || 0;
@@ -236,7 +250,24 @@ function saveItemForm(existingId) {
   if (!name) { showToast('Fehler', 'Name darf nicht leer sein.', 'danger'); return; }
   if (!category) { showToast('Fehler', 'Bitte wähle eine Kategorie.', 'danger'); return; }
 
-  Inventory.save({ id: existingId, name, category, stock, minStock, unit, reusable });
+  const itemData = { id: existingId, name, category, stock, minStock, unit, reusable };
+
+  // 1. Zuerst im Browser speichern (damit die Tabelle sich sofort aktualisiert)
+  Inventory.save(itemData);
+
+  // 2. An das Java-Backend schicken (API-Call)
+  try {
+    await fetch('http://localhost:8081/api/add-inventory', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(itemData)
+    });
+    console.log("✅ Erfolgreich an das Java-Backend gesendet:", itemData);
+  } catch (error) {
+    console.error("🚨 Fehler beim Senden an das Backend:", error);
+    // Wir zeigen dem User keinen Fehler an, weil es lokal trotzdem gespeichert wurde!
+  }
+
   closeModal();
   renderAll();
   showToast('Gespeichert', `"${name}" wurde gespeichert.`, 'success');
@@ -250,7 +281,10 @@ function deleteItem(id) {
   const item = Inventory.getById(id);
   if (!item) return;
   if (!confirm(`"${item.name}" wirklich löschen?`)) return;
+  
   Inventory.delete(id);
+  // Hinweis: Wenn dein Backend später einen Löschen-Endpunkt hat, käme hier der fetch('.../api/delete-inventory') hin!
+
   renderAll();
   showToast('Gelöscht', `"${item.name}" wurde entfernt.`, 'info');
 }

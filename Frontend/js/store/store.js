@@ -317,5 +317,38 @@ function importData(data) {
   window.dispatchEvent(new CustomEvent('storeChange', { detail: { key: 'all' } }));
 }
 
-// Initialisierung beim Laden
-init();
+// ── Backend Integration (Neu) ─────────────────────────────────────────────────
+
+const BACKEND_URL = 'http://localhost:8081/api'; // Der Port deines Java-Backends im Docker
+
+async function fetchFromBackend() {
+  try {
+    // 1. Tasks vom Java-Backend holen
+    const taskResponse = await fetch(`${BACKEND_URL}/tasks`);
+    if (taskResponse.ok) {
+      const tasks = await taskResponse.json();
+      // Format-Anpassung: Das Backend schickt evtl. Strings, das Frontend erwartet bestimmte Formate.
+      localStorage.setItem(KEYS.tasks, JSON.stringify(tasks));
+    }
+
+    // 2. Inventar vom Java-Backend holen
+    const invResponse = await fetch(`${BACKEND_URL}/inventory`);
+    if (invResponse.ok) {
+      const inventory = await invResponse.json();
+      localStorage.setItem(KEYS.inventory, JSON.stringify(inventory));
+    }
+
+    console.log("✅ Daten erfolgreich vom Backend geladen!");
+
+    // 3. Dem Frontend sagen, dass es sich neu zeichnen soll
+    window.dispatchEvent(new CustomEvent('storeChange', { detail: { key: 'all' } }));
+
+  } catch (error) {
+    console.error("🚨 Fehler beim Verbinden mit dem Java-Backend:", error);
+    // Fallback: Nutze die alten Dummy-Daten, falls der Server offline ist
+    init(); 
+  }
+}
+
+// Lade die Daten vom Server, sobald die Datei eingebunden wird
+fetchFromBackend();
