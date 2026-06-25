@@ -6,8 +6,13 @@ function el(tag, attrs = {}, ...children) {
   const e = document.createElement(tag);
   for (const [k, v] of Object.entries(attrs)) {
     if (k === 'class') e.className = v;
-    else if (k.startsWith('on')) e.addEventListener(k.slice(2).toLowerCase(), v);
-    else e.setAttribute(k, v);
+    else if (k === 'style' && typeof v === 'object') {
+      Object.assign(e.style, v);
+    } else if (k.startsWith('on')) {
+      e.addEventListener(k.slice(2).toLowerCase(), v);
+    } else {
+      e.setAttribute(k, v);
+    }
   }
   for (const child of children) {
     if (child == null) continue;
@@ -16,8 +21,13 @@ function el(tag, attrs = {}, ...children) {
   return e;
 }
 
-function qs(selector, parent = document) { return parent.querySelector(selector); }
-function qsa(selector, parent = document) { return [...parent.querySelectorAll(selector)]; }
+function qs(selector, parent = document) { 
+  return parent.querySelector(selector); 
+}
+
+function qsa(selector, parent = document) { 
+  return [...parent.querySelectorAll(selector)]; 
+}
 
 function setHTML(selector, html, parent = document) {
   const node = qs(selector, parent);
@@ -49,29 +59,68 @@ function showToast(title, msg = '', type = 'info', duration = 4000) {
 
 // ── Modal ─────────────────────────────────────────────────────────────────────
 
+let currentModal = null;
+
 function openModal(title, bodyHTML, footerButtons = []) {
+  // Vorhandenes Modal schließen
   closeModal();
-  const footer = el('div', { class: 'modal-footer' }, ...footerButtons);
+  
+  // Modal erstellen
   const modal = el('div', { class: 'modal' },
     el('div', { class: 'modal-header' },
       el('h2', {}, title),
       el('button', { class: 'modal-close', onclick: closeModal }, '×')
     ),
-    el('div', { class: 'modal-body', innerHTML: bodyHTML || '' }),
-    footer
+    el('div', { class: 'modal-body' })
   );
-  const backdrop = el('div', { class: 'modal-backdrop', id: 'modal-backdrop' }, modal);
-  backdrop.addEventListener('click', e => { if (e.target === backdrop) closeModal(); });
+  
+  // Body Inhalt setzen
+  const body = modal.querySelector('.modal-body');
+  if (body) {
+    body.innerHTML = bodyHTML || '';
+  }
+  
+  // Footer hinzufügen
+  const footer = el('div', { class: 'modal-footer' });
+  for (const btn of footerButtons) {
+    if (btn instanceof HTMLElement) {
+      footer.appendChild(btn);
+    }
+  }
+  modal.appendChild(footer);
+  
+  // Backdrop
+  const backdrop = el('div', { class: 'modal-backdrop', id: 'modal-backdrop' });
+  backdrop.appendChild(modal);
+  backdrop.addEventListener('click', e => { 
+    if (e.target === backdrop) closeModal(); 
+  });
+  
   document.body.appendChild(backdrop);
-  return { modal, footer };
+  currentModal = { modal, backdrop, body };
+  
+  return { modal, backdrop, body };
 }
 
 function closeModal() {
-  const b = qs('#modal-backdrop');
-  if (b) b.remove();
+  const backdrop = document.getElementById('modal-backdrop');
+  if (backdrop) {
+    backdrop.remove();
+  }
+  currentModal = null;
 }
 
-function getModalBody() { return qs('#modal-backdrop .modal-body'); }
+function getModalBody() {
+  const backdrop = document.getElementById('modal-backdrop');
+  if (!backdrop) return null;
+  return backdrop.querySelector('.modal-body');
+}
+
+function getModal() {
+  const backdrop = document.getElementById('modal-backdrop');
+  if (!backdrop) return null;
+  return backdrop.querySelector('.modal');
+}
 
 // ── Datum ─────────────────────────────────────────────────────────────────────
 
@@ -103,7 +152,4 @@ function urgencyLabel(dateStr) {
   if (d === 0) return 'Heute';
   if (d === 1) return 'Morgen';
   return `in ${d} Tagen`;
-}
-function qs(selector, parent = document) { 
-  return parent.querySelector(selector); 
 }
