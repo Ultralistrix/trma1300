@@ -17,7 +17,12 @@ package com.trma1300;
 
 public class Main {
     public static void main(String[] args) throws Exception {
-        // Create a built-in Java HTTP server that listens on port 8080.
+        ////manuscode();
+        
+    }
+
+    public static void manuscode() throws Exception{
+                // Create a built-in Java HTTP server that listens on port 8080.
         // The '0' indicates the default system backlog for incoming connections.
         HttpServer server = HttpServer.create(new InetSocketAddress(8080), 0);
 
@@ -95,6 +100,7 @@ public class Main {
         // Fire up the server!
         server.start();
         System.out.println("Server started on http://localhost:8080");
+
     }
 
     /**
