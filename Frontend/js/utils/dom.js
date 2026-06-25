@@ -104,3 +104,6 @@ function urgencyLabel(dateStr) {
   if (d === 1) return 'Morgen';
   return `in ${d} Tagen`;
 }
+function qs(selector, parent = document) { 
+  return parent.querySelector(selector); 
+}
