@@ -30,4 +30,6 @@ bin/
 .DS_Store
 
 ### DB ###
-java/src/main/resources/trmadatabase.db
+*.db
+*.sqlite
+*.sqlite3
