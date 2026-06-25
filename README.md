@@ -1,5 +1,15 @@
 # TRMA1300 — Task and Inventory Management System
 
+## Work in Progress
+
+The following features are planned or currently in development:
+
+- **Localisation** — Adding English as a supported language
+- **Native Java UI** — A desktop UI written in Java that connects directly to the backend, replacing the web frontend
+- **Mobile / Native Client** — A dedicated Android app (Java) or a cross-platform native client for Android and PC
+
+---
+
 TRMA1300 is a full-stack web application designed to manage operational tasks and track inventory levels. It features a robust dependency system where tasks can be linked to required inventory items, automatically tracking stock levels and alerting users when critical thresholds (iron margins) are breached.
 
 ---
@@ -42,7 +52,7 @@ Before running the project, ensure you have the following installed on your host
 ### 1. Clone the Repository
 
 ```bash
-git clone https://github.com/Ultralistrix/trma1300
+git clone https://github.com/Ultralistrix/trma1300/
 cd TRMA1300
 ```
 
