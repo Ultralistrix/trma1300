@@ -64,16 +64,15 @@ function renderInventoryTable() {
         <span class="reusable-dot ${item.reusable ? 'yes' : 'no'}"></span>
         ${item.reusable ? 'Ja' : 'Nein'}
       </td>
-      <td>${stockBarHTML(item)}</td>
+      <td class="font-mono" style="font-weight:600">${item.stock} <span class="text-muted" style="font-weight:400;font-size:11px">${item.unit}</span></td>
       <td class="font-mono" style="font-size:12px">
         ${reserved > 0
-          ? `<span class="${overReserved ? 'text-danger' : 'text-warning'}" title="Reserviert für Aufgaben">${reserved} ${item.unit}</span>
-             <span class="text-muted" style="font-size:11px;display:block">frei: ${available} ${item.unit}</span>`
+          ? `<span class="text-warning" title="Aktuell in Aufgaben im Einsatz">${reserved} ${item.unit}</span>`
           : `<span class="text-muted">—</span>`
         }
       </td>
       <td class="font-mono" style="color:var(--text3)">${item.minStock} ${item.unit}</td>
-      <td>${stockBadgeHTML(item)}${overReserved ? ` <span class="badge badge-danger" style="margin-left:4px" title="Reservierter Bedarf übersteigt Bestand">Überbucht</span>` : ''}</td>
+      <td>${stockBadgeHTML(item)}</td>
       <td>
         <div class="flex gap-2">
           <button class="btn-ghost btn-sm" onclick="openEditItem('${item.id}')"> Bearbeiten</button>

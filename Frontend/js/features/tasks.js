@@ -38,10 +38,7 @@ function renderTaskList() {
     const days = daysUntil(task.endDate);
     const overdue = days !== null && days < 0;
     
-    const hasShortage = task.inventoryItems.some(({ itemId, quantity }) => {
-      const item = Inventory.getById(itemId);
-      return item && item.stock < quantity;
-    });
+    const hasShortage = false; // Ressourcen werden beim Speichern sofort abgezogen
 
     return `
       <div class="task-card priority-${task.priority}" onclick="openTaskDetail('${task.id}')" style="cursor:pointer">
@@ -86,10 +83,7 @@ function openTaskDetail(id) {
       </div>`;
   }).join('');
 
-  const canComplete = task.inventoryItems.every(({ itemId, quantity }) => {
-    const item = Inventory.getById(itemId);
-    return item && item.stock >= quantity;
-  });
+  const canComplete = true; // Ressourcen wurden beim Speichern bereits abgezogen
 
   const bodyHTML = `
     <div class="flex gap-3 items-center" style="margin-bottom:16px">
@@ -146,9 +140,11 @@ function completeTask(taskId) {
   task.inventoryItems.forEach(({ itemId, quantity }) => {
     const item = Inventory.getById(itemId);
     if (!item) return;
-    if (!item.reusable) {
-      const newStock = Math.max(0, item.stock - quantity);
-      Inventory.updateStock(itemId, newStock);
+    if (item.reusable) {
+      // Wiederverwendbar: beim Erstellen abgezogen, jetzt zurückbuchen
+      Inventory.updateStock(itemId, item.stock + quantity);
+    } else {
+      // Nicht wiederverwendbar: bereits beim Erstellen abgezogen → nur loggen
       consumedItems.push({ itemId, itemName: item.name, unit: item.unit, quantity });
     }
   });
@@ -176,6 +172,7 @@ function openTaskForm(task) {
   const allTasks = Tasks.getAll().filter(t => t.id !== task?.id);
   const allItems = Inventory.getAll();
   const isEdit = !!task;
+  const today = new Date().toISOString().split('T')[0];
 
   // State für das Formular
   const formState = {
@@ -214,11 +211,11 @@ function openTaskForm(task) {
         </div>
         <div class="form-group">
           <label>Startdatum</label>
-          <input type="date" class="tf-start" value="${task?.startDate || ''}">
+          <input type="date" class="tf-start" value="${task?.startDate || today}">
         </div>
         <div class="form-group">
           <label>Enddatum</label>
-          <input type="date" class="tf-end" value="${task?.endDate || ''}">
+          <input type="date" class="tf-end" value="${task?.endDate || today}">
         </div>
       </div>
       <div class="form-group">
@@ -431,30 +428,53 @@ function saveTaskForm(state) {
     return; 
   }
 
-  // Task speichern
   const taskData = {
     id: state.task?.id || null,
-    name, 
-    responsible, 
-    description, 
-    priority, 
-    startDate, 
-    endDate, 
-    dependencies: state.selectedDeps || [], 
-    inventoryItems: state.selectedItems || [] 
+    name,
+    responsible,
+    description,
+    priority,
+    startDate,
+    endDate,
+    dependencies: state.selectedDeps || [],
+    inventoryItems: state.selectedItems || []
   };
-  
+
+  // Bei Bearbeitung: alte Items zurückbuchen
+  const oldItems = state.task?.id ? (Tasks.getById(state.task.id)?.inventoryItems || []) : [];
+  oldItems.forEach(({ itemId, quantity }) => {
+    const item = Inventory.getById(itemId);
+    if (item) Inventory.updateStock(itemId, item.stock + quantity);
+  });
+
   Tasks.save(taskData);
-  
+
+  // Neue Items sofort vom Bestand abziehen
+  const shortages = [];
+  (state.selectedItems || []).forEach(({ itemId, quantity }) => {
+    const item = Inventory.getById(itemId);
+    if (!item) return;
+    const newStock = item.stock - quantity;
+    Inventory.updateStock(itemId, Math.max(0, newStock));
+    if (newStock < 0) shortages.push(`${item.name}: fehlen ${Math.abs(newStock)} ${item.unit}`);
+  });
+
   closeModal();
   renderTaskList();
   updateNavBadge();
   showToast('Gespeichert', `Aufgabe "${name}" wurde gespeichert.`, 'success');
+  if (shortages.length > 0) {
+    showToast('Bestand reicht nicht', shortages.join(', '), 'danger', 7000);
+  }
 }
 
 function deleteTask(id) {
   const task = Tasks.getById(id);
   if (!task || !confirm(`"${task.name}" wirklich löschen?`)) return;
+  task.inventoryItems.forEach(({ itemId, quantity }) => {
+    const item = Inventory.getById(itemId);
+    if (item) Inventory.updateStock(itemId, item.stock + quantity);
+  });
   Tasks.delete(id);
   renderTaskList();
   showToast('Gelöscht', `"${task.name}" wurde entfernt.`, 'info');

@@ -75,11 +75,24 @@ function init() {
   if (!localStorage.getItem(KEYS.categories)) {
     localStorage.setItem(KEYS.categories, JSON.stringify(DEFAULT_CATEGORIES));
   }
-  if (!localStorage.getItem(KEYS.inventory)) {
-    localStorage.setItem(KEYS.inventory, JSON.stringify(DEFAULT_INVENTORY));
-  }
-  if (!localStorage.getItem(KEYS.tasks)) {
+  if (!localStorage.getItem(KEYS.inventory) && !localStorage.getItem(KEYS.tasks)) {
+    // Frischer Start: Bestand der Default-Tasks sofort abziehen
+    const inv = DEFAULT_INVENTORY.map(i => ({ ...i }));
+    DEFAULT_TASKS.forEach(task => {
+      task.inventoryItems.forEach(({ itemId, quantity }) => {
+        const item = inv.find(i => i.id === itemId);
+        if (item) item.stock = Math.max(0, item.stock - quantity);
+      });
+    });
+    localStorage.setItem(KEYS.inventory, JSON.stringify(inv));
     localStorage.setItem(KEYS.tasks, JSON.stringify(DEFAULT_TASKS));
+  } else {
+    if (!localStorage.getItem(KEYS.inventory)) {
+      localStorage.setItem(KEYS.inventory, JSON.stringify(DEFAULT_INVENTORY));
+    }
+    if (!localStorage.getItem(KEYS.tasks)) {
+      localStorage.setItem(KEYS.tasks, JSON.stringify(DEFAULT_TASKS));
+    }
   }
 }
 

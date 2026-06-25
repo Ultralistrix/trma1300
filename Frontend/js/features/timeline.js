@@ -106,7 +106,7 @@ function renderTimelineStats() {
 // ── Tab-Switching ─────────────────────────────────────────────────────────────
 
 function switchTab(tab) {
-  ['kaufplan', 'monat', 'history'].forEach(t => {
+  ['monat', 'history'].forEach(t => {
     const view = document.getElementById(`view-${t}`);
     const btn = document.getElementById(`tab-${t}`);
     if (view) view.style.display = t === tab ? '' : 'none';
@@ -212,12 +212,9 @@ function renderCompletionHistory() {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-  renderTimelineStats();
-  renderTimeline();
+  renderMonthlyForecast();
   updateNavBadge();
   window.addEventListener('storeChange', () => {
-    renderTimeline();
-    renderTimelineStats();
     const monatView = document.getElementById('view-monat');
     if (monatView && monatView.style.display !== 'none') renderMonthlyForecast();
     const historyView = document.getElementById('view-history');

@@ -45,10 +45,7 @@ function renderDashboard() {
       upcomingContainer.innerHTML = upcoming.map(task => {
         const days = daysUntil(task.endDate);
         const overdue = days !== null && days < 0;
-        const hasShortage = task.inventoryItems.some(({ itemId, quantity }) => {
-          const item = Inventory.getById(itemId);
-          return item && item.stock < quantity;
-        });
+        const hasShortage = false;
         return `
           <div class="task-card priority-${task.priority}" onclick="location.href='tasks.html'" style="cursor:pointer">
             <div class="task-card-header">
