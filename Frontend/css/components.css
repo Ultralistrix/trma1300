@@ -194,12 +194,12 @@ td { padding: 12px 16px; font-size: 13px; vertical-align: middle; }
 @media (max-width: 900px) { .dashboard-grid { grid-template-columns: 1fr; } }
 /* Min-Stock Einträge in der Timeline */
 .timeline-item.min-stock-entry {
-  border-left: 3px solid var(--danger);
+  border-left: 2px solid var(--danger);
 }
 
 .timeline-buy-item.min-stock-item {
   background: rgba(239, 68, 68, 0.08);
-  border-radius: 4px;
+  border-radius: 2px;
   padding: 4px 8px;
 }
 
