@@ -28,8 +28,8 @@ const DEFAULT_TASKS = [
     responsible: 'Anna Müller',
     description: 'Aufbau der Erste-Hilfe-Station im Lagerbereich Ost.',
     priority: 'hoch',
-    startDate: '2025-01-10',
-    endDate: '2025-01-15',
+    startDate: '2026-07-01',
+    endDate: '2026-07-15',
     dependencies: [],
     inventoryItems: [{ itemId: 'i1', quantity: 50 }, { itemId: 'i3', quantity: 10 }],
   },
@@ -39,8 +39,8 @@ const DEFAULT_TASKS = [
     responsible: 'Ben Schmidt',
     description: 'Werkzeuge katalogisieren und Kammer einrichten.',
     priority: 'mittel',
-    startDate: '2025-01-12',
-    endDate: '2025-01-20',
+    startDate: '2026-07-12',
+    endDate: '2026-07-20',
     dependencies: ['t1'],
     inventoryItems: [{ itemId: 'i2', quantity: 2 }],
   },
@@ -50,8 +50,8 @@ const DEFAULT_TASKS = [
     responsible: 'Clara Weber',
     description: 'Kabel verlegen für neues Lagerfeld.',
     priority: 'hoch',
-    startDate: '2025-01-18',
-    endDate: '2025-01-25',
+    startDate: '2026-07-18',
+    endDate: '2026-07-25',
     dependencies: ['t2'],
     inventoryItems: [{ itemId: 'i4', quantity: 5 }],
   },
@@ -61,8 +61,8 @@ const DEFAULT_TASKS = [
     responsible: 'David Klein',
     description: 'Regelmäßige Desinfektion aller Arbeitsbereiche.',
     priority: 'niedrig',
-    startDate: '2025-01-22',
-    endDate: '2025-02-01',
+    startDate: '2026-07-22',
+    endDate: '2026-08-01',
     dependencies: [],
     inventoryItems: [{ itemId: 'i5', quantity: 10 }, { itemId: 'i1', quantity: 20 }],
   },
@@ -111,7 +111,6 @@ const Inventory = {
   delete(id) {
     saveAll(KEYS.inventory, this.getAll().filter(i => i.id !== id));
   },
-  // Aktualisiert den Bestand eines Items
   updateStock(id, newStock) {
     const item = this.getById(id);
     if (item) {
@@ -121,16 +120,13 @@ const Inventory = {
     }
     return false;
   },
-  // Prüft ob ein Item unter der eisernen Grenze ist
   isBelowMin(id) {
     const item = this.getById(id);
     return item ? item.stock <= item.minStock : false;
   },
-  // Gibt alle Items zurück die unter eiserne Grenze gefallen sind
   getAlerts() {
     return this.getAll().filter(i => i.stock <= i.minStock);
   },
-  // Sucht Items nach Name oder Kategorie
   search(query) {
     const q = query.toLowerCase().trim();
     if (!q) return this.getAll();
@@ -139,7 +135,6 @@ const Inventory = {
       i.category.toLowerCase().includes(q)
     );
   },
-  // Holt Items nach Kategorie
   getByCategory(category) {
     if (!category) return this.getAll();
     return this.getAll().filter(i => i.category === category);
@@ -215,7 +210,6 @@ const Categories = {
     if (idx !== -1 && !all.includes(newName)) {
       all[idx] = newName;
       saveAll(KEYS.categories, all);
-      // Kategorie in Inventar-Items aktualisieren
       const items = Inventory.getAll();
       items.forEach(item => {
         if (item.category === oldName) {
@@ -231,10 +225,15 @@ const Categories = {
 
 // ── Kaufplan-Logik ────────────────────────────────────────────────────────────
 
-function buildPurchasePlan() {
+function buildPurchasePlan(includeMinStockAlerts = true) {
   const tasks = Tasks.getSorted();
+  const allItems = Inventory.getAll();
   const plan = [];
+  
+  // Erstelle eine Map für Items die bereits im Plan sind (für Min-Stock-Alerts)
+  const itemsInPlan = new Map();
 
+  // 1. Zuerst: Aufgaben-basierte Kaufbedarfe
   tasks.forEach(task => {
     const itemsToBuy = [];
     task.inventoryItems.forEach(({ itemId, quantity }) => {
@@ -246,15 +245,57 @@ function buildPurchasePlan() {
           item, 
           needed: quantity - available, 
           currentStock: item.stock,
-          minStock: item.minStock
+          minStock: item.minStock,
+          reason: 'Aufgabenbedarf'
         });
+        itemsInPlan.set(itemId, true);
       }
     });
     if (itemsToBuy.length > 0) {
-      plan.push({ task, date: task.startDate, itemsToBuy });
+      plan.push({ 
+        task, 
+        date: task.startDate, 
+        itemsToBuy,
+        type: 'task'
+      });
     }
   });
 
+  // 2. Dann: Items die unter der eisernen Grenze sind (wenn aktiviert)
+  if (includeMinStockAlerts) {
+    const minStockItems = allItems.filter(item => {
+      // Nur Items die nicht bereits im Plan sind und unter der Grenze liegen
+      return !itemsInPlan.has(item.id) && item.stock <= item.minStock && item.minStock > 0;
+    });
+
+    if (minStockItems.length > 0) {
+      // Erstelle einen "Auffüllen" Eintrag für diese Items
+      const replenishItems = minStockItems.map(item => ({
+        item,
+        needed: item.minStock - item.stock + 1, // +1 um über die Grenze zu kommen
+        currentStock: item.stock,
+        minStock: item.minStock,
+        reason: 'Eiserne Grenze unterschritten'
+      }));
+
+      // Füge einen speziellen Eintrag hinzu
+      plan.push({
+        task: {
+          id: 'min-stock-replenish',
+          name: '⚠️ Bestand auffüllen (Eiserne Grenze)',
+          responsible: 'Lagerverwaltung',
+          description: 'Items die unter der eisernen Grenze liegen müssen aufgefüllt werden.'
+        },
+        date: new Date().toISOString().split('T')[0], // Heute
+        itemsToBuy: replenishItems,
+        type: 'min-stock'
+      });
+    }
+  }
+
+  // Sortiere nach Datum
+  plan.sort((a, b) => new Date(a.date) - new Date(b.date));
+  
   return plan;
 }
 
