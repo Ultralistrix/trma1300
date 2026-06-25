@@ -11,7 +11,6 @@ function renderTimeline() {
   if (plan.length === 0) {
     container.innerHTML = `
       <div class="empty-state">
-        ✅
         <p>Kein Kaufbedarf erkannt. Alle Aufgaben sind mit ausreichend Inventar versorgt.</p>
         <button class="btn-primary" onclick="location.href='tasks.html'" style="margin-top:12px">Aufgaben anzeigen</button>
       </div>`;
@@ -29,7 +28,7 @@ function renderTimeline() {
 
     const itemsHTML = entry.itemsToBuy.map(({ item, needed, currentStock, minStock, reason }) => `
       <div class="timeline-buy-item ${isMinStock ? 'min-stock-item' : ''}">
-        <span>📦</span>
+        <span></span>
         <span><strong>${needed} ${item.unit}</strong> ${item.name} kaufen</span>
         <span class="text-muted" style="margin-left:auto">
           Bestand: ${currentStock} ${item.unit} 
@@ -48,10 +47,10 @@ function renderTimeline() {
         <div class="timeline-body">
           <div class="timeline-date">${formatDate(entry.date)} · ${urgencyLabel(entry.date)} ${typeBadge}</div>
           <div class="timeline-title">${entry.task.name}</div>
-          <div class="text-sm text-muted">👤 ${entry.task.responsible}</div>
+          <div class="text-sm text-muted"> ${entry.task.responsible}</div>
           ${entry.task.description ? `<div class="text-sm text-muted" style="margin-top:2px">${entry.task.description}</div>` : ''}
           <div class="timeline-items">${itemsHTML}</div>
-          <button class="btn-ghost btn-sm" onclick="location.href='inventory.html'" style="margin-top:4px">📦 Bestand aktualisieren</button>
+          <button class="btn-ghost btn-sm" onclick="location.href='inventory.html'" style="margin-top:4px"> Bestand aktualisieren</button>
         </div>
       </div>`;
   }).join('')}</div>`;
@@ -96,7 +95,7 @@ function renderTimelineStats() {
     </div>
     ${minStockItems.length > 0 ? `
       <div class="stat-card" style="border-color:var(--danger)">
-        <div class="stat-label">⚠️ Eiserne Grenze</div>
+        <div class="stat-label">Eiserne Grenze</div>
         <div class="stat-value text-danger">${minStockItems.length}</div>
         <div class="stat-sub">Items unter der Grenze</div>
       </div>
