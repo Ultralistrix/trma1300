@@ -15,12 +15,12 @@
 
   <header class="topbar">
     <div class="topbar-brand">
-      <div class="logo-icon"></div>
+      <div class="logo-icon">📦</div>
       Lagerverwaltung
     </div>
     <div class="topbar-right">
       <button class="notif-btn" onclick="location.href='inventory.html'">
-        Warnungen
+        🔔 Warnungen
         <span class="notif-count hidden" id="notif-count">0</span>
       </button>
     </div>
@@ -28,11 +28,11 @@
 
   <nav class="sidebar">
     <div class="sidebar-section-label">Übersicht</div>
-    <a class="nav-item" href="dashboard.html"><span class="nav-icon"></span> Dashboard</a>
+    <a class="nav-item" href="dashboard.html"><span class="nav-icon">🏠</span> Dashboard</a>
     <div class="sidebar-section-label">Verwaltung</div>
-    <a class="nav-item" href="tasks.html"><span class="nav-icon"></span> Aufgaben</a>
-    <a class="nav-item" href="inventory.html"><span class="nav-icon"></span> Inventar</a>
-    <a class="nav-item active" href="timeline.html"><span class="nav-icon"></span> Kaufplan</a>
+    <a class="nav-item" href="tasks.html"><span class="nav-icon">📋</span> Aufgaben</a>
+    <a class="nav-item" href="inventory.html"><span class="nav-icon">📦</span> Inventar</a>
+    <a class="nav-item active" href="timeline.html"><span class="nav-icon">🛒</span> Kaufplan</a>
   </nav>
 
   <main class="main-content">
@@ -47,6 +47,7 @@
 
     <div class="card" style="margin-bottom:16px;padding:14px 18px;background:rgba(79,142,247,0.06);border-color:rgba(79,142,247,0.2)">
       <div class="flex items-center gap-3">
+        <span>ℹ️</span>
         <span style="font-size:13px;color:var(--text2)">
           Der Kaufplan zeigt alle Aufgaben bei denen der aktuelle Bestand nicht ausreicht.
           Items werden nach Startdatum der Aufgabe sortiert. Verbrauchbare Items werden beim Abschluss vom Bestand abgezogen.
