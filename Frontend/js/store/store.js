@@ -282,7 +282,7 @@ function buildPurchasePlan(includeMinStockAlerts = true) {
       plan.push({
         task: {
           id: 'min-stock-replenish',
-          name: '⚠️ Bestand auffüllen (Eiserne Grenze)',
+          name: 'Bestand auffüllen (Eiserne Grenze)',
           responsible: 'Lagerverwaltung',
           description: 'Items die unter der eisernen Grenze liegen müssen aufgefüllt werden.'
         },
