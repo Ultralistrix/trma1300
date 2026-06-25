@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="aa9943fd-546b-4dbf-b4c0-be0ebae530a7" name="Changes" comment="init java project" />
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="EmbeddingIndexingInfo">
+    <option name="cachedIndexableFilesCount" value="6" />
+    <option name="fileBasedEmbeddingIndicesEnabled" value="true" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Class" />
+      </list>
+    </option>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/.." />
+  </component>
+  <component name="GitHubPullRequestSearchHistory"><![CDATA[{
+  "lastFilter": {
+    "state": "OPEN",
+    "assignee": "Ultralistrix"
+  }
+}]]></component>
+  <component name="GithubPullRequestsUISettings"><![CDATA[{
+  "selectedUrlAndAccountId": {
+    "url": "https://github.com/Ultralistrix/trma1300",
+    "accountId": "59cb9cfd-3af6-4fa3-87e4-b512e9b04775"
+  }
+}]]></component>
+  <component name="McpProjectServerCommands">
+    <commands />
+    <urls />
+  </component>
+  <component name="NextEditCompletionFeaturesState">
+    <decayedCancelled>
+      <entry key="MS100" value="1.0220973389250092" />
+      <entry key="MS500" value="1.5205080372437851" />
+      <entry key="S2" value="3.2924927846713445" />
+      <entry key="S5" value="5.806194677633782" />
+      <entry key="S10" value="7.493022016913923" />
+      <entry key="S30" value="9.049772555300724" />
+      <entry key="S60" value="9.508776066946531" />
+      <entry key="M2" value="9.750211829145002" />
+      <entry key="M5" value="9.899062752646381" />
+      <entry key="M10" value="9.949359377212962" />
+      <entry key="M15" value="9.96620123810464" />
+      <entry key="M30" value="9.983081414430714" />
+      <entry key="H1" value="9.99153590018753" />
+      <entry key="H2" value="9.995766747601932" />
+      <entry key="H4" value="9.997883073086097" />
+      <entry key="D1" value="9.999647137073925" />
+      <entry key="W1" value="9.999949589987434" />
+    </decayedCancelled>
+    <decayedSelected>
+      <entry key="MS100" value="0.0" />
+      <entry key="MS500" value="0.0" />
+      <entry key="S2" value="0.0" />
+      <entry key="S5" value="0.0" />
+      <entry key="S10" value="0.0" />
+      <entry key="S30" value="0.0" />
+      <entry key="S60" value="0.0" />
+      <entry key="M2" value="0.0" />
+      <entry key="M5" value="0.0" />
+      <entry key="M10" value="0.0" />
+      <entry key="M15" value="0.0" />
+      <entry key="M30" value="0.0" />
+      <entry key="H1" value="0.0" />
+      <entry key="H2" value="0.0" />
+      <entry key="H4" value="0.0" />
+      <entry key="D1" value="0.0" />
+      <entry key="W1" value="0.0" />
+    </decayedSelected>
+    <decayedShown>
+      <entry key="MS100" value="0.9941480334423405" />
+      <entry key="MS500" value="1.5120860440901434" />
+      <entry key="S2" value="3.284305736843901" />
+      <entry key="S5" value="5.795998566748731" />
+      <entry key="S10" value="7.485028276027803" />
+      <entry key="S30" value="9.046128901585003" />
+      <entry key="S60" value="9.506803321543856" />
+      <entry key="M2" value="9.749185225449796" />
+      <entry key="M5" value="9.898642118414537" />
+      <entry key="M10" value="9.949147365783917" />
+      <entry key="M15" value="9.966059518473461" />
+      <entry key="M30" value="9.983010364732142" />
+      <entry key="H1" value="9.991500327765296" />
+      <entry key="H2" value="9.995748949484781" />
+      <entry key="H4" value="9.997874171049416" />
+      <entry key="D1" value="9.99964565298738" />
+      <entry key="W1" value="9.999949377964935" />
+    </decayedShown>
+  </component>
+  <component name="ProjectColorInfo"><![CDATA[{
+  "associatedIndex": 3,
+  "fromUser": false
+}]]></component>
+  <component name="ProjectId" id="3FcYNPCgAjnGh8dTSTpT6aMhIZN" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "ModuleVcsDetector.initialDetectionPerformed": "true",
+    "RunOnceActivity.MCP Project settings loaded": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "RunOnceActivity.typescript.service.memoryLimit.init": "true",
+    "codeWithMe.voiceChat.enabledByDefault": "false",
+    "git-widget-placeholder": "main",
+    "kotlin-language-version-configured": "true",
+    "last_opened_file_path": "/home/ultralistrix/Documents/Hackathon git/trma1300/trma1300/src",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "settings.editor.selected.configurable": "preferences.lookFeel",
+    "vue.rearranger.settings.migration": "true"
+  }
+}]]></component>
+  <component name="SharedIndexes">
+    <attachedChunks>
+      <set>
+        <option value="bundled-jdk-30f59d01ecdd-37e91769500f-intellij.indexing.shared.core-IU-261.25134.95" />
+        <option value="bundled-js-predefined-d6986cc7102b-31caf2ab9e3c-JavaScript-IU-261.25134.95" />
+      </set>
+    </attachedChunks>
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="aa9943fd-546b-4dbf-b4c0-be0ebae530a7" name="Changes" comment="" />
+      <created>1782375784022</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1782375784022</updated>
+      <workItem from="1782375785335" duration="815000" />
+    </task>
+    <task id="LOCAL-00001" summary="init java project">
+      <option name="closed" value="true" />
+      <created>1782375845832</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1782375845832</updated>
+    </task>
+    <option name="localTasksCounter" value="2" />
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="init java project" />
+    <option name="LAST_COMMIT_MESSAGE" value="init java project" />
+  </component>
+</project>
