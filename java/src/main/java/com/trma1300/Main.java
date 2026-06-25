@@ -34,18 +34,18 @@ public class Main {
                     }
 
                     // Default fallback message in case the file cannot be read
-                    String fakeDbContent = "Couldn't load database content.";
+                    String sqlContent = "Couldn't load database schema.";
 
-                    // Try to read the 'fakedb.md' file from the 'resources' folder inside the compiled JAR
-                    try (InputStream is = Main.class.getResourceAsStream("/fakedb.md")) {
+                    // Try to read the 'trmadatabaseschema.sql' file from the 'resources' folder inside the compiled JAR
+                    try (InputStream is = Main.class.getResourceAsStream("/trmadatabaseschema.sql")) {
                         if (is != null) {
                             // If the file exists, read it line by line and combine it into a single String
                             try (BufferedReader reader = new BufferedReader(new InputStreamReader(is, StandardCharsets.UTF_8))) {
-                                fakeDbContent = reader.lines().collect(Collectors.joining("\n"));
+                                sqlContent = reader.lines().collect(Collectors.joining("\n"));
                             }
                         } else {
                             // Log a warning to the console if the file is missing
-                            System.out.println("WARNING: Database was not found!");
+                            System.out.println("WARNING: trmdatabaseschema.sql was not found!");
                         }
                     } catch (Exception e) {
                         System.out.println("Error while reading the file: " + e.getMessage());
@@ -56,7 +56,7 @@ public class Main {
                     List<Map<String, String>> records = new ArrayList<>();
                     Map<String, String> row = new HashMap<>();
                     row.put("id", "1");
-                    row.put("content", fakeDbContent);
+                    row.put("content", sqlContent);
                     records.add(row);
 
                     // Convert our Java data structure into a JSON-formatted string
@@ -82,6 +82,7 @@ public class Main {
                 } catch (Exception ex) {
                     // If anything crashes during the process, catch the error 
                     // and send a 500 (Internal Server Error) to the client
+                    ex.printStackTrace(); // Added this so you can see errors in Docker logs
                     try {
                         exchange.sendResponseHeaders(500, -1);
                     } catch (Exception ignored) {}
