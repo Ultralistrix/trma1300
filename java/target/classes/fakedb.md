@@ -28,3 +28,8 @@ CREATE TABLE inventory (
     capacity INTEGER
 );
 ```
+
+generate:
+```sh
+sqlite3 trmadatabase.db < trmadatabaseschema.sql
+```
