@@ -10,6 +10,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+
 import com.sun.net.httpserver.Headers;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
@@ -28,7 +29,7 @@ public class Main {
                         return;
                     }
 
-                    String fakeDbContent = "Platzhalter-Daten konnten nicht geladen werden.";
+                    String fakeDbContent = "Couldn't load database content.";
 
                     try (InputStream is = Main.class.getResourceAsStream("/fakedb.md")) {
                         if (is != null) {
@@ -36,10 +37,10 @@ public class Main {
                                 fakeDbContent = reader.lines().collect(Collectors.joining("\n"));
                             }
                         } else {
-                            System.out.println("WARNUNG: Database was not found!");
+                            System.out.println("WARNING: Database was not found!");
                         }
                     } catch (Exception e) {
-                        System.out.println("Fehler beim Lesen der Datei: " + e.getMessage());
+                        System.out.println("Error while reading the file: " + e.getMessage());
                     }
 
                     List<Map<String, String>> records = new ArrayList<>();
@@ -69,7 +70,7 @@ public class Main {
 
         server.setExecutor(null);
         server.start();
-        System.out.println("Server gestartet auf http://localhost:8080");
+        System.out.println("Server started on http://localhost:8080");
     }
 
     // Minimal JSON serialization to avoid external deps
