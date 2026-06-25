@@ -42,11 +42,21 @@ Before running the project, ensure you have the following installed on your host
 ### 1. Clone the Repository
 
 ```bash
-git clone github.com/Ultralistrix/trma1300/
+git clone <your-repository-url>
 cd TRMA1300
 ```
 
-### 2. Start the Application
+### 2. Generate the Database
+
+Before starting the application, initialize the SQLite database using the provided schema file:
+
+```bash
+sqlite3 trmadatabase.db < trmadatabaseschema.sql
+```
+
+This creates the database file with all the required tables and structure.
+
+### 3. Start the Application
 
 The project uses Docker Compose to build the Java backend via Maven and start the Nginx web server simultaneously.
 
@@ -54,12 +64,12 @@ Navigate to the `docker` directory and start the containers in detached mode:
 
 ```bash
 cd docker
-docker compose up -d
+docker compose up -d --build
 ```
 
 > **Note:** The `--build` flag ensures the Java backend is compiled freshly via the multi-stage Dockerfile before starting.
 
-### 3. Access the Application
+### 4. Access the Application
 
 Once the containers are running, open your browser and navigate to:
 
@@ -68,7 +78,7 @@ Once the containers are running, open your browser and navigate to:
 | Frontend UI | http://localhost:8080 |
 | Backend API | http://localhost:8081/api/ |
 
-### 4. Stop the Application
+### 5. Stop the Application
 
 To safely stop the running containers, run the following from inside the `docker` directory:
 
@@ -104,21 +114,40 @@ The Java backend exposes the following REST endpoints. All data is transmitted a
 
 ```
 TRMA1300/
-├── docker/                 # Infrastructure and deployment
+├── docker/                         # Infrastructure and deployment
 │   └── docker-compose.yml
-├── Frontend/               # Nginx web root (static assets)
+├── Frontend/                       # Nginx web root (static assets)
 │   ├── css/
+│   │   ├── base.css
+│   │   ├── components.css
+│   │   └── layout.css
 │   ├── js/
 │   │   ├── features/
+│   │   │   ├── dashboard.js
+│   │   │   ├── inventory.js
+│   │   │   ├── tasks.js
+│   │   │   └── timeline.js
 │   │   ├── store/
+│   │   │   └── store.js
 │   │   └── utils/
-│   └── pages/
-├── java/                   # Backend application
-│   ├── src/main/java/      # Java source code (Javalin, JDBC)
-│   ├── src/main/resources/ # SQLite database and schema
-│   ├── pom.xml             # Maven dependencies
-│   └── Dockerfile          # Multi-stage build instructions
-└── .vscode/                # Editor configuration for Java development
+│   │       └── dom.js
+│   ├── pages/
+│   └── index.html
+├── java/                           # Backend application
+│   ├── src/main/
+│   │   ├── java/com/trma1300/
+│   │   │   ├── Main.java
+│   │   │   ├── ReadDatabase.java
+│   │   │   └── WriteDatabase.java
+│   │   └── resources/
+│   │       ├── trmadatabase.db
+│   │       └── trmadatabaseschema.sql
+│   ├── test/
+│   ├── target/
+│   ├── Dockerfile                  # Multi-stage build instructions
+│   └── pom.xml                     # Maven dependencies
+└── nginx/
+    └── nginx.conf
 ```
 
 ---
