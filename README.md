@@ -42,7 +42,7 @@ Before running the project, ensure you have the following installed on your host
 ### 1. Clone the Repository
 
 ```bash
-git clone <your-repository-url>
+git clone https://github.com/Ultralistrix/trma1300
 cd TRMA1300
 ```
 
