@@ -1,24 +1,25 @@
 version: '3.8'
 
 services:
-  # The Web Server pulls a pre-built image
   web:
     image: nginx:alpine
+    container_name: nginx_web_server
     ports:
       - "8080:80"
     volumes:
-      - ../html:/usr/share/nginx/html:ro
-      - ../nginx/nginx.conf:/etc/nginx/nginx.conf:ro
-      - ../database:/etc/sqlite/data
+      # Mappt nur deinen Frontend-Ordner auf den Standard-Nginx-Pfad
+      - ../Frontend:/usr/share/nginx/html:ro
+    environment:
+      - TZ=UTC
     restart: always
 
-  # The Backend builds a custom image using your Dockerfile
   backend:
     build: 
       context: ../java
       dockerfile: Dockerfile
+    container_name: java_backend
     ports:
-      - "8081:8080" # Assuming your Java app runs on 8080
-    volumes:
-      - ../database:/etc/sqlite/data # Share the database with the backend
+      - "8081:8080"
+    # Das Volume für die Datenbank wurde entfernt, 
+    # da die fakedb.md beim Bauen automatisch in die .jar gepackt wird.
     restart: always
