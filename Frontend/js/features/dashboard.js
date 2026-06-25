@@ -40,7 +40,7 @@ function renderDashboard() {
   if (upcomingContainer) {
     const upcoming = tasks.filter(t => t.endDate).slice(0, 4);
     if (upcoming.length === 0) {
-      upcomingContainer.innerHTML = `<div class="empty-state">📋<p>Keine Aufgaben vorhanden.</p></div>`;
+      upcomingContainer.innerHTML = `<div class="empty-state"><p>Keine Aufgaben vorhanden.</p></div>`;
     } else {
       upcomingContainer.innerHTML = upcoming.map(task => {
         const days = daysUntil(task.endDate);
@@ -60,7 +60,7 @@ function renderDashboard() {
             </div>
             <div class="task-card-meta">
               <span class="text-muted text-sm"> ${task.responsible}</span><br>
-              <span class="text-muted text-sm">📅 ${formatDate(task.endDate)}</span>
+              <span class="text-muted text-sm"> ${formatDate(task.endDate)}</span>
               ${overdue ? `<span class="badge badge-danger">Überfällig</span>` : ''}
             </div>
           </div>`;
@@ -84,11 +84,11 @@ function renderDashboard() {
           <div style="margin-top:8px;display:flex;flex-direction:column;gap:4px">
             ${entry.itemsToBuy.map(({ item, needed }) => `
               <div class="timeline-buy-item">
-                <span>📦</span>
+                <span></span>
                 <span><strong>${needed} ${item.unit}</strong> ${item.name}</span>
               </div>`).join('')}
           </div>
-          <button class="btn-ghost btn-sm" onclick="location.href='inventory.html'" style="margin-top:6px">📦 Bestand prüfen</button>
+          <button class="btn-ghost btn-sm" onclick="location.href='inventory.html'" style="margin-top:6px">Bestand prüfen</button>
         </div>`).join('');
     }
   }
