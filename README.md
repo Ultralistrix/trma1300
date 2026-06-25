@@ -1,2 +1,3 @@
 # trma1300
-Time and resources managment app 
+A warehouse management app that decides when what needs to be done depending on a certain timeline
+
