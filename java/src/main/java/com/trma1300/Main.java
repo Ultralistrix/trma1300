@@ -1,10 +1,9 @@
 package com.trma1300;
-
-import io.javalin.Javalin;
-
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.net.InetSocketAddress;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -12,46 +11,92 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import com.sun.net.httpserver.Headers;
+import com.sun.net.httpserver.HttpExchange;
+import com.sun.net.httpserver.HttpHandler;
+import com.sun.net.httpserver.HttpServer;
+
 public class Main {
-    public static void main(String[] args) {
-        // 1. Starte den Java API-Server auf Port 8080
-        Javalin app = Javalin.create(config -> {
-            // Erlaube dem Frontend (Nginx), mit dem Backend zu kommunizieren (CORS)
-            config.plugins.enableCors(cors -> {
-                cors.add(it -> it.anyHost());
-            });
-        }).start(8080);
+    public static void main(String[] args) throws Exception {
+        HttpServer server = HttpServer.create(new InetSocketAddress(8080), 0);
 
-        // 2. Erstelle den API-Endpunkt für das Frontend
-        app.get("/api/data", ctx -> {
-            String fakeDbContent = "Platzhalter-Daten konnten nicht geladen werden.";
-
-            // 3. Lese die fakedb.md aus dem resources-Ordner
-            // Der "/" am Anfang ist wichtig, damit er im Hauptverzeichnis der resources sucht
-            try (InputStream is = Main.class.getResourceAsStream("/fakedb.md")) {
-                if (is != null) {
-                    try (BufferedReader reader = new BufferedReader(new InputStreamReader(is, StandardCharsets.UTF_8))) {
-                        // Liest alle Zeilen der Markdown-Datei und fügt sie zu einem String zusammen
-                        fakeDbContent = reader.lines().collect(Collectors.joining("\n"));
+        server.createContext("/api/data", new HttpHandler() {
+            @Override
+            public void handle(HttpExchange exchange) {
+                try {
+                    if (!"GET".equalsIgnoreCase(exchange.getRequestMethod())) {
+                        exchange.sendResponseHeaders(405, -1);
+                        return;
                     }
-                } else {
-                    System.out.println("WARNUNG: fakedb.md wurde nicht gefunden!");
+
+                    String fakeDbContent = "Couldn't load database content.";
+
+                    try (InputStream is = Main.class.getResourceAsStream("/fakedb.md")) {
+                        if (is != null) {
+                            try (BufferedReader reader = new BufferedReader(new InputStreamReader(is, StandardCharsets.UTF_8))) {
+                                fakeDbContent = reader.lines().collect(Collectors.joining("\n"));
+                            }
+                        } else {
+                            System.out.println("WARNING: Database was not found!");
+                        }
+                    } catch (Exception e) {
+                        System.out.println("Error while reading the file: " + e.getMessage());
+                    }
+
+                    List<Map<String, String>> records = new ArrayList<>();
+                    Map<String, String> row = new HashMap<>();
+                    row.put("id", "1");
+                    row.put("content", fakeDbContent);
+                    records.add(row);
+
+                    String json = toJson(records);
+
+                    Headers respHeaders = exchange.getResponseHeaders();
+                    respHeaders.add("Content-Type", "application/json; charset=utf-8");
+                    respHeaders.add("Access-Control-Allow-Origin", "*");
+
+                    byte[] resp = json.getBytes(StandardCharsets.UTF_8);
+                    exchange.sendResponseHeaders(200, resp.length);
+                    try (OutputStream os = exchange.getResponseBody()) {
+                        os.write(resp);
+                    }
+                } catch (Exception ex) {
+                    try {
+                        exchange.sendResponseHeaders(500, -1);
+                    } catch (Exception ignored) {}
                 }
-            } catch (Exception e) {
-                System.out.println("Fehler beim Lesen der Datei: " + e.getMessage());
             }
-
-            // 4. Packe den Inhalt in eine Liste, damit es als JSON verschickt werden kann.
-            // Wir nutzen das gleiche Format wie vorher, damit dein Frontend-Script weiterhin funktioniert!
-            List<Map<String, String>> records = new ArrayList<>();
-            Map<String, String> row = new HashMap<>();
-            
-            row.put("id", "1");
-            row.put("content", fakeDbContent); // Hier landet der Text aus deiner .md Datei
-            records.add(row);
-
-            // Sende die Daten als JSON an das Frontend zurück
-            ctx.json(records);
         });
+
+        server.setExecutor(null);
+        server.start();
+        System.out.println("Server started on http://localhost:8080");
+    }
+
+    // Minimal JSON serialization to avoid external deps
+    private static String toJson(List<Map<String, String>> records) {
+        StringBuilder sb = new StringBuilder();
+        sb.append('[');
+        boolean first = true;
+        for (Map<String, String> r : records) {
+            if (!first) sb.append(',');
+            first = false;
+            sb.append('{');
+            boolean innerFirst = true;
+            for (Map.Entry<String, String> e : r.entrySet()) {
+                if (!innerFirst) sb.append(',');
+                innerFirst = false;
+                sb.append('"').append(escape(e.getKey())).append('"').append(':')
+                  .append('"').append(escape(e.getValue())).append('"');
+            }
+            sb.append('}');
+        }
+        sb.append(']');
+        return sb.toString();
+    }
+
+    private static String escape(String s) {
+        if (s == null) return "";
+        return s.replace("\\", "\\\\").replace("\"", "\\\"").replace("\n", "\\n");
     }
 }
