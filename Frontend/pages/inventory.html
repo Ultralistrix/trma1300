@@ -15,12 +15,12 @@
 
   <header class="topbar">
     <div class="topbar-brand">
-      <div class="logo-icon">📦</div>
+      <div class="logo-icon"></div>
       Lagerverwaltung
     </div>
     <div class="topbar-right">
       <button class="notif-btn" onclick="location.href='inventory.html'">
-        🔔 Warnungen
+        Warnungen
         <span class="notif-count hidden" id="notif-count">0</span>
       </button>
     </div>
@@ -28,11 +28,11 @@
 
   <nav class="sidebar">
     <div class="sidebar-section-label">Übersicht</div>
-    <a class="nav-item" href="dashboard.html"><span class="nav-icon">🏠</span> Dashboard</a>
+    <a class="nav-item" href="dashboard.html"><span class="nav-icon"></span> Dashboard</a>
     <div class="sidebar-section-label">Verwaltung</div>
-    <a class="nav-item" href="tasks.html"><span class="nav-icon">📋</span> Aufgaben</a>
-    <a class="nav-item active" href="inventory.html"><span class="nav-icon">📦</span> Inventar</a>
-    <a class="nav-item" href="timeline.html"><span class="nav-icon">🛒</span> Kaufplan</a>
+    <a class="nav-item" href="tasks.html"><span class="nav-icon"></span> Aufgaben</a>
+    <a class="nav-item active" href="inventory.html"><span class="nav-icon"></span> Inventar</a>
+    <a class="nav-item" href="timeline.html"><span class="nav-icon"></span> Kaufplan</a>
   </nav>
 
   <main class="main-content">
@@ -47,7 +47,7 @@
     <div id="alert-banner"></div>
 
     <div class="filter-bar">
-      <input type="search" id="filter-search" placeholder="🔍 Suchen..." style="max-width:220px">
+      <input type="search" id="filter-search" placeholder="Suchen..." style="max-width:220px">
       <select id="filter-category">
         <option value="">Alle Kategorien</option>
       </select>
@@ -73,9 +73,9 @@
     </div>
     
     <div style="margin-top:16px;display:flex;gap:12px;flex-wrap:wrap;padding:12px;background:var(--bg-card);border-radius:8px">
-      <button class="btn-ghost btn-sm" onclick="if(confirm('Wirklich alle Daten zurücksetzen?')){localStorage.clear();location.reload();}">🔄 Daten zurücksetzen</button>
+      <button class="btn-ghost btn-sm" onclick="if(confirm('Wirklich alle Daten zurücksetzen?')){localStorage.clear();location.reload();}"> Daten zurücksetzen</button>
       <button class="btn-ghost btn-sm" onclick="const data=exportData();const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='lagerdaten_'+new Date().toISOString().slice(0,10)+'.json';a.click();">📤 Export</button>
-      <button class="btn-ghost btn-sm" onclick="document.getElementById('import-file').click();">📥 Import</button>
+      <button class="btn-ghost btn-sm" onclick="document.getElementById('import-file').click();">Import</button>
       <input type="file" id="import-file" accept=".json" style="display:none" onchange="const file=this.files[0];const reader=new FileReader();reader.onload=(e)=>{try{const data=JSON.parse(e.target.result);importData(data);showToast('Import erfolgreich','Daten wurden importiert.','success');}catch(err){showToast('Import fehlgeschlagen',err.message,'danger');}};reader.readAsText(file);">
     </div>
   </main>
