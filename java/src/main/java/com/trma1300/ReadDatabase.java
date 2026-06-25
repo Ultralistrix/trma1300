@@ -5,15 +5,9 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 
 
-import java.io.File;
-
 public class ReadDatabase {
     public static void main() {
-        String jdbcUrl = "jdbc:sqlite:./trma1300/java/src/resources/";
-        File f = new File(jdbcUrl);
-        if(!f.exists() || f.isDirectory()){
-
-        }        
+        String jdbcUrl = "jdbc:sqlite:./trma1300/java/src/resources/trmadatabase.db";
 
         try {
             Connection connection = DriverManager.getConnection(jdbcUrl);
