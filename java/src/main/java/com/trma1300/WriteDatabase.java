@@ -7,10 +7,8 @@ import java.sql.SQLException;
 
 public class WriteDatabase {
 
-    private static final String DB_URL = "jdbc:sqlite:database.db";
-
     public static void insertTask(Integer id, String name, String description, String assigned, Integer priority, String startdate, String enddate, Integer dependency){
-        try (Connection connection = DriverManager.getConnection(DB_URL)) {
+        try (Connection connection = DriverManager.getConnection(Main.DB_URL)) {
             
             String insertQuery = "INSERT INTO tasks (id, name, description, assigned, priority, startdate, enddate, dependency) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
 
@@ -41,7 +39,7 @@ public class WriteDatabase {
     }
 
     public static void insertInventory(Integer id, String name, String description, Boolean reusable, String category, Integer ironmargin, Integer stock, Integer capacity){
-        try (Connection connection = DriverManager.getConnection(DB_URL)) {
+        try (Connection connection = DriverManager.getConnection(Main.DB_URL)) {
             
             // CRITICAL FIX: Changed table name from 'tasks' to 'inventory'
             String insertQuery = "INSERT INTO inventory (id, name, description, reusable, category, ironmargin, stock, capacity) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
@@ -69,7 +67,7 @@ public class WriteDatabase {
 
     // CRITICAL FIX: Added 'static' so Main can call it
     public static void connect(Integer taskId, Integer invId){
-        try (Connection connection = DriverManager.getConnection(DB_URL)) {
+        try (Connection connection = DriverManager.getConnection(Main.DB_URL)) {
             
             String insertQuery = "INSERT INTO allocation (task, inventory) VALUES (?, ?)";
 
