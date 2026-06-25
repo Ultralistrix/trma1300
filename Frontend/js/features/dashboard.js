@@ -22,7 +22,7 @@ function renderDashboard() {
       alertBanner.style.display = '';
       alertBanner.innerHTML = `
         <div class="alert-panel">
-          <h3>🚨 ${alerts.length} Item${alerts.length > 1 ? 's unter eiserner Grenze' : ' unter eiserner Grenze'}</h3>
+          <h3> ${alerts.length} Item${alerts.length > 1 ? 's unter eiserner Grenze' : ' unter eiserner Grenze'}</h3>
           <div class="alert-list">
             ${alerts.map(i => `
               <div class="alert-list-item">
@@ -59,7 +59,7 @@ function renderDashboard() {
               </div>
             </div>
             <div class="task-card-meta">
-              <span class="text-muted text-sm">👤 ${task.responsible}</span>
+              <span class="text-muted text-sm"> ${task.responsible}</span><br>
               <span class="text-muted text-sm">📅 ${formatDate(task.endDate)}</span>
               ${overdue ? `<span class="badge badge-danger">Überfällig</span>` : ''}
             </div>

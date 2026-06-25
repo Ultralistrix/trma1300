@@ -30,7 +30,7 @@ function renderTaskList() {
   tasks.sort((a, b) => new Date(a.startDate) - new Date(b.startDate));
 
   if (tasks.length === 0) {
-    container.innerHTML = `<div class="empty-state">📋<p>Keine Aufgaben gefunden.</p></div>`;
+    container.innerHTML = `<div class="empty-state"><p>Keine Aufgaben gefunden.</p></div>`;
     return;
   }
 
@@ -53,7 +53,7 @@ function renderTaskList() {
           </div>
         </div>
         <div class="task-card-meta">
-          <span class="text-muted text-sm">👤 ${task.responsible}</span>
+          <span class="text-muted text-sm">${task.responsible}</span>
           <span class="text-muted text-sm">📅 ${formatDate(task.startDate)} – ${formatDate(task.endDate)}</span>
           ${overdue ? `<span class="badge badge-danger">Überfällig</span>` : days !== null && days <= 3 ? `<span class="badge badge-warn">Bald fällig</span>` : ''}
         </div>
@@ -118,7 +118,7 @@ function openTaskDetail(id) {
   
   if (canComplete) {
     footerButtons[1].className = 'btn-success';
-    footerButtons[1].textContent = '✅ Abschließen';
+    footerButtons[1].textContent = 'Abschließen';
     footerButtons[1].onclick = () => {
       if (confirm(`"${task.name}" als abgeschlossen markieren? Verbrauchbare Items werden vom Bestand abgezogen.`)) {
         completeTask(task.id);
@@ -128,11 +128,11 @@ function openTaskDetail(id) {
   }
   
   footerButtons[2].className = 'btn-ghost btn-sm';
-  footerButtons[2].textContent = '✏️ Bearbeiten';
+  footerButtons[2].textContent = ' Bearbeiten';
   footerButtons[2].onclick = () => { closeModal(); openTaskForm(task); };
   
   footerButtons[3].className = 'btn-danger btn-sm';
-  footerButtons[3].textContent = '🗑️ Löschen';
+  footerButtons[3].textContent = 'Löschen';
   footerButtons[3].onclick = () => { closeModal(); deleteTask(task.id); };
 
   openModal(task.name, bodyHTML, footerButtons);

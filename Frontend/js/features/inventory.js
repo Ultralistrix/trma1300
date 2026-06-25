@@ -65,9 +65,9 @@ function renderInventoryTable() {
       <td>${stockBadgeHTML(item)}</td>
       <td>
         <div class="flex gap-2">
-          <button class="btn-ghost btn-sm" onclick="openEditItem('${item.id}')">✏️ Bearbeiten</button>
-          <button class="btn-ghost btn-sm" onclick="quickUpdateStock('${item.id}')">📦 Bestand</button>
-          <button class="btn-ghost btn-sm text-danger" onclick="deleteItem('${item.id}')">🗑️</button>
+          <button class="btn-ghost btn-sm" onclick="openEditItem('${item.id}')"> Bearbeiten</button>
+          <button class="btn-ghost btn-sm" onclick="quickUpdateStock('${item.id}')"> Bestand</button>
+          <button class="btn-ghost btn-sm text-danger" onclick="deleteItem('${item.id}')"></button>
         </div>
       </td>
     </tr>
@@ -90,7 +90,7 @@ function renderAlertBanner() {
   banner.style.display = '';
   banner.innerHTML = `
     <div class="alert-panel">
-      <h3>🚨 ${alerts.length} Item${alerts.length > 1 ? 's' : ''} unter eiserner Grenze</h3>
+      <h3> ${alerts.length} Item${alerts.length > 1 ? 's' : ''} unter eiserner Grenze</h3>
       <div class="alert-list">
         ${alerts.map(i => `
           <div class="alert-list-item">
@@ -129,7 +129,7 @@ function quickUpdateStock(id) {
           <input type="number" id="q-stock" min="0" value="${item.stock}">
         </div>
       </div>
-      ${item.minStock > 0 ? `<div style="margin-top:8px;font-size:12px;color:var(--text3)">⚠️ Eiserne Grenze: ${item.minStock} ${item.unit}</div>` : ''}
+      ${item.minStock > 0 ? `<div style="margin-top:8px;font-size:12px;color:var(--text3)">Eiserne Grenze: ${item.minStock} ${item.unit}</div>` : ''}
     </div>
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px">
       <button class="btn-secondary" onclick="window._adjustStock('${id}', -1)">−1</button>
@@ -242,7 +242,7 @@ function saveItemForm(existingId) {
   showToast('Gespeichert', `"${name}" wurde gespeichert.`, 'success');
 
   if (stock <= minStock) {
-    showToast('⚠️ Eiserne Grenze', `"${name}" liegt unter der eisernen Grenze (${minStock} ${unit}).`, 'danger', 6000);
+    showToast('Eiserne Grenze', `"${name}" liegt unter der eisernen Grenze (${minStock} ${unit}).`, 'danger', 6000);
   }
 }
 
