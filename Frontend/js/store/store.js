@@ -111,23 +111,39 @@ const Inventory = {
   delete(id) {
     saveAll(KEYS.inventory, this.getAll().filter(i => i.id !== id));
   },
-  // Bestand nach Aufgabe anpassen (verbrauchbar → abziehen, wiederverwendbar → zurück)
-  applyTaskConsumption(taskId, restore = false) {
-    const task = Tasks.getById(taskId);
-    if (!task) return;
-    task.inventoryItems.forEach(({ itemId, quantity }) => {
-      const item = this.getById(itemId);
-      if (!item) return;
-      if (!item.reusable) {
-        item.stock = restore ? item.stock + quantity : Math.max(0, item.stock - quantity);
-        this.save(item);
-      }
-    });
+  // Aktualisiert den Bestand eines Items
+  updateStock(id, newStock) {
+    const item = this.getById(id);
+    if (item) {
+      item.stock = Math.max(0, newStock);
+      this.save(item);
+      return true;
+    }
+    return false;
+  },
+  // Prüft ob ein Item unter der eisernen Grenze ist
+  isBelowMin(id) {
+    const item = this.getById(id);
+    return item ? item.stock <= item.minStock : false;
   },
   // Gibt alle Items zurück die unter eiserne Grenze gefallen sind
   getAlerts() {
     return this.getAll().filter(i => i.stock <= i.minStock);
   },
+  // Sucht Items nach Name oder Kategorie
+  search(query) {
+    const q = query.toLowerCase().trim();
+    if (!q) return this.getAll();
+    return this.getAll().filter(i => 
+      i.name.toLowerCase().includes(q) || 
+      i.category.toLowerCase().includes(q)
+    );
+  },
+  // Holt Items nach Kategorie
+  getByCategory(category) {
+    if (!category) return this.getAll();
+    return this.getAll().filter(i => i.category === category);
+  }
 };
 
 // ── Aufgaben API ──────────────────────────────────────────────────────────────
@@ -143,16 +159,43 @@ const Tasks = {
     saveAll(KEYS.tasks, all);
   },
   delete(id) {
-    // Abhängigkeiten aus anderen Tasks entfernen
     const all = this.getAll()
       .filter(t => t.id !== id)
       .map(t => ({ ...t, dependencies: t.dependencies.filter(d => d !== id) }));
     saveAll(KEYS.tasks, all);
   },
-  // Gibt Tasks sortiert nach Startdatum zurück
   getSorted() {
     return this.getAll().slice().sort((a, b) => new Date(a.startDate) - new Date(b.startDate));
   },
+  getByPriority(priority) {
+    if (!priority) return this.getAll();
+    return this.getAll().filter(t => t.priority === priority);
+  },
+  search(query) {
+    const q = query.toLowerCase().trim();
+    if (!q) return this.getAll();
+    return this.getAll().filter(t => 
+      t.name.toLowerCase().includes(q) || 
+      t.responsible.toLowerCase().includes(q) ||
+      t.description.toLowerCase().includes(q)
+    );
+  },
+  getOverdue() {
+    const today = new Date();
+    return this.getAll().filter(t => {
+      const end = new Date(t.endDate);
+      return end < today;
+    });
+  },
+  getUpcoming(days = 7) {
+    const today = new Date();
+    const future = new Date(today);
+    future.setDate(future.getDate() + days);
+    return this.getAll().filter(t => {
+      const start = new Date(t.startDate);
+      return start >= today && start <= future;
+    });
+  }
 };
 
 // ── Kategorien API ────────────────────────────────────────────────────────────
@@ -166,22 +209,45 @@ const Categories = {
   delete(name) {
     saveAll(KEYS.categories, this.getAll().filter(c => c !== name));
   },
+  rename(oldName, newName) {
+    const all = this.getAll();
+    const idx = all.indexOf(oldName);
+    if (idx !== -1 && !all.includes(newName)) {
+      all[idx] = newName;
+      saveAll(KEYS.categories, all);
+      // Kategorie in Inventar-Items aktualisieren
+      const items = Inventory.getAll();
+      items.forEach(item => {
+        if (item.category === oldName) {
+          item.category = newName;
+          Inventory.save(item);
+        }
+      });
+      return true;
+    }
+    return false;
+  }
 };
 
 // ── Kaufplan-Logik ────────────────────────────────────────────────────────────
 
 function buildPurchasePlan() {
   const tasks = Tasks.getSorted();
-  const plan = []; // { task, date, itemsToBuy: [{item, needed, currentStock}] }
+  const plan = [];
 
   tasks.forEach(task => {
     const itemsToBuy = [];
     task.inventoryItems.forEach(({ itemId, quantity }) => {
       const item = Inventory.getById(itemId);
       if (!item) return;
-      const available = item.reusable ? item.stock : item.stock;
+      const available = item.stock;
       if (available < quantity) {
-        itemsToBuy.push({ item, needed: quantity - available, currentStock: item.stock });
+        itemsToBuy.push({ 
+          item, 
+          needed: quantity - available, 
+          currentStock: item.stock,
+          minStock: item.minStock
+        });
       }
     });
     if (itemsToBuy.length > 0) {
@@ -190,6 +256,24 @@ function buildPurchasePlan() {
   });
 
   return plan;
+}
+
+// ── Daten-Export/Import ──────────────────────────────────────────────────────
+
+function exportData() {
+  return {
+    inventory: Inventory.getAll(),
+    tasks: Tasks.getAll(),
+    categories: Categories.getAll(),
+    exportedAt: new Date().toISOString()
+  };
+}
+
+function importData(data) {
+  if (data.inventory) saveAll(KEYS.inventory, data.inventory);
+  if (data.tasks) saveAll(KEYS.tasks, data.tasks);
+  if (data.categories) saveAll(KEYS.categories, data.categories);
+  window.dispatchEvent(new CustomEvent('storeChange', { detail: { key: 'all' } }));
 }
 
 // Initialisierung beim Laden

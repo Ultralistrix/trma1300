@@ -3,6 +3,7 @@
  */
 
 let currentFilter = { search: '', category: '' };
+let selectedItemId = null;
 
 function getStockStatus(item) {
   if (item.stock <= item.minStock) return 'danger';
@@ -32,12 +33,16 @@ function stockBadgeHTML(item) {
 
 function renderInventoryTable() {
   const all = Inventory.getAll();
-  const filtered = all.filter(item => {
-    const matchSearch = !currentFilter.search ||
-      item.name.toLowerCase().includes(currentFilter.search.toLowerCase());
-    const matchCat = !currentFilter.category || item.category === currentFilter.category;
-    return matchSearch && matchCat;
-  });
+  let filtered = all;
+  
+  if (currentFilter.search) {
+    filtered = filtered.filter(item => 
+      item.name.toLowerCase().includes(currentFilter.search.toLowerCase())
+    );
+  }
+  if (currentFilter.category) {
+    filtered = filtered.filter(item => item.category === currentFilter.category);
+  }
 
   const tbody = qs('#inv-tbody');
   if (!tbody) return;
@@ -60,8 +65,9 @@ function renderInventoryTable() {
       <td>${stockBadgeHTML(item)}</td>
       <td>
         <div class="flex gap-2">
-          <button class="btn-ghost btn-sm" onclick="openEditItem('${item.id}')">Bearbeiten</button>
-          <button class="btn-ghost btn-sm text-danger" onclick="deleteItem('${item.id}')">Löschen</button>
+          <button class="btn-ghost btn-sm" onclick="openEditItem('${item.id}')">✏️ Bearbeiten</button>
+          <button class="btn-ghost btn-sm" onclick="quickUpdateStock('${item.id}')">📦 Bestand</button>
+          <button class="btn-ghost btn-sm text-danger" onclick="deleteItem('${item.id}')">🗑️</button>
         </div>
       </td>
     </tr>
@@ -90,6 +96,7 @@ function renderAlertBanner() {
           <div class="alert-list-item">
             <span>⬤</span>
             <span><strong>${i.name}</strong> — Bestand: <strong class="text-danger">${i.stock} ${i.unit}</strong>, Grenze: ${i.minStock} ${i.unit}</span>
+            <button class="btn-ghost btn-sm" onclick="quickUpdateStock('${i.id}')" style="margin-left:auto">Bestand aktualisieren</button>
           </div>`).join('')}
       </div>
     </div>`;
@@ -103,13 +110,62 @@ function updateNavBadge() {
   badge.classList.toggle('hidden', count === 0);
 }
 
-// ── Formular für neues/editiertes Item ───────────────────────────────────────
+// ── Quick Stock Update ───────────────────────────────────────────────────────
+
+function quickUpdateStock(id) {
+  const item = Inventory.getById(id);
+  if (!item) return;
+  
+  const bodyHTML = `
+    <div class="form-group">
+      <label>${item.name}</label>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+        <div>
+          <label style="font-size:11px">Aktueller Bestand</label>
+          <div style="font-size:20px;font-weight:600">${item.stock} ${item.unit}</div>
+        </div>
+        <div class="form-group">
+          <label>Neuer Bestand</label>
+          <input type="number" id="q-stock" min="0" value="${item.stock}">
+        </div>
+      </div>
+      ${item.minStock > 0 ? `<div style="margin-top:8px;font-size:12px;color:var(--text3)">⚠️ Eiserne Grenze: ${item.minStock} ${item.unit}</div>` : ''}
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px">
+      <button class="btn-secondary" onclick="window._adjustStock('${id}', -1)">−1</button>
+      <button class="btn-secondary" onclick="window._adjustStock('${id}', 1)">+1</button>
+      <button class="btn-secondary" onclick="window._adjustStock('${id}', -10)">−10</button>
+      <button class="btn-secondary" onclick="window._adjustStock('${id}', 10)">+10</button>
+    </div>`;
+
+  window._adjustStock = (itemId, amount) => {
+    const input = qs('#q-stock');
+    if (input) {
+      const val = parseInt(input.value) || 0;
+      input.value = Math.max(0, val + amount);
+    }
+  };
+
+  openModal('Bestand aktualisieren', bodyHTML, [
+    el('button', { class: 'btn-secondary', onclick: closeModal }, 'Abbrechen'),
+    el('button', { class: 'btn-primary', onclick: () => {
+      const val = parseInt(qs('#q-stock')?.value) || 0;
+      Inventory.updateStock(id, val);
+      closeModal();
+      renderAll();
+      showToast('Bestand aktualisiert', `${item.name}: ${val} ${item.unit}`, 'success');
+    }}, 'Speichern')
+  ]);
+}
+
+// ── Formular für neues/editiertes Item ──────────────────────────────────────
 
 function openAddItem() {
   openItemForm(null);
 }
 
 function openEditItem(id) {
+  selectedItemId = id;
   openItemForm(Inventory.getById(id));
 }
 
@@ -119,16 +175,19 @@ function openItemForm(item) {
   const title = isEdit ? 'Item bearbeiten' : 'Neues Item';
   const bodyHTML = `
     <div class="form-group">
-      <label>Name</label>
+      <label>Name *</label>
       <input id="f-name" type="text" value="${item?.name || ''}" placeholder="z. B. Bandagen">
     </div>
     <div class="form-group">
-      <label>Kategorie</label>
-      <select id="f-category">
-        ${cats.map(c => `<option value="${c}" ${item?.category === c ? 'selected' : ''}>${c}</option>`).join('')}
-      </select>
+      <label>Kategorie *</label>
+      <div style="display:flex;gap:8px">
+        <select id="f-category" style="flex:1">
+          ${cats.map(c => `<option value="${c}" ${item?.category === c ? 'selected' : ''}>${c}</option>`).join('')}
+        </select>
+        <button class="btn-ghost btn-sm" onclick="addNewCategory()" title="Neue Kategorie">+</button>
+      </div>
     </div>
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px">
       <div class="form-group">
         <label>Bestand</label>
         <input id="f-stock" type="number" min="0" value="${item?.stock ?? 0}">
@@ -137,20 +196,33 @@ function openItemForm(item) {
         <label>Eiserne Grenze</label>
         <input id="f-minstock" type="number" min="0" value="${item?.minStock ?? 0}">
       </div>
-    </div>
-    <div class="form-group">
-      <label>Einheit (z. B. Stk, L, kg)</label>
-      <input id="f-unit" type="text" value="${item?.unit || 'Stk'}">
+      <div class="form-group">
+        <label>Einheit</label>
+        <input id="f-unit" type="text" value="${item?.unit || 'Stk'}" placeholder="Stk, L, kg...">
+      </div>
     </div>
     <div class="form-group" style="flex-direction:row;align-items:center;gap:10px">
       <input id="f-reusable" type="checkbox" style="width:auto" ${item?.reusable ? 'checked' : ''}>
       <label for="f-reusable" style="margin:0;cursor:pointer">Wiederverwendbar</label>
     </div>`;
 
-  const { footer } = openModal(title, bodyHTML, [
+  openModal(title, bodyHTML, [
     el('button', { class: 'btn-secondary', onclick: closeModal }, 'Abbrechen'),
     el('button', { class: 'btn-primary', onclick: () => saveItemForm(item?.id) }, isEdit ? 'Speichern' : 'Hinzufügen'),
   ]);
+}
+
+function addNewCategory() {
+  const name = prompt('Neue Kategorie eingeben:');
+  if (name && name.trim()) {
+    Categories.add(name.trim());
+    renderCategoryFilter();
+    const select = qs('#f-category');
+    if (select) {
+      select.value = name.trim();
+    }
+    showToast('Kategorie hinzugefügt', `"${name.trim()}"`, 'success');
+  }
 }
 
 function saveItemForm(existingId) {
@@ -162,6 +234,7 @@ function saveItemForm(existingId) {
   const reusable = qs('#f-reusable')?.checked || false;
 
   if (!name) { showToast('Fehler', 'Name darf nicht leer sein.', 'danger'); return; }
+  if (!category) { showToast('Fehler', 'Bitte wähle eine Kategorie.', 'danger'); return; }
 
   Inventory.save({ id: existingId, name, category, stock, minStock, unit, reusable });
   closeModal();

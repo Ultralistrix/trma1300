@@ -28,7 +28,7 @@ function renderDashboard() {
               <div class="alert-list-item">
                 <span>⬤</span>
                 <span><strong>${i.name}</strong> — Bestand <strong class="text-danger">${i.stock}</strong> / Grenze ${i.minStock} ${i.unit}</span>
-                <a href="inventory.html" style="margin-left:auto;font-size:11px">→ Inventar</a>
+                <button class="btn-ghost btn-sm" onclick="location.href='inventory.html'" style="margin-left:auto;font-size:11px">→ Bestand aktualisieren</button>
               </div>`).join('')}
           </div>
         </div>`;
@@ -45,11 +45,18 @@ function renderDashboard() {
       upcomingContainer.innerHTML = upcoming.map(task => {
         const days = daysUntil(task.endDate);
         const overdue = days !== null && days < 0;
+        const hasShortage = task.inventoryItems.some(({ itemId, quantity }) => {
+          const item = Inventory.getById(itemId);
+          return item && item.stock < quantity;
+        });
         return `
           <div class="task-card priority-${task.priority}" onclick="location.href='tasks.html'" style="cursor:pointer">
             <div class="task-card-header">
               <span class="task-card-title">${task.name}</span>
-              <span class="badge badge-${task.priority === 'hoch' ? 'danger' : task.priority === 'mittel' ? 'warn' : 'ok'}">${task.priority}</span>
+              <div class="flex gap-2">
+                ${hasShortage ? `<span class="badge badge-danger">⚠</span>` : ''}
+                <span class="badge badge-${task.priority === 'hoch' ? 'danger' : task.priority === 'mittel' ? 'warn' : 'ok'}">${task.priority}</span>
+              </div>
             </div>
             <div class="task-card-meta">
               <span class="text-muted text-sm">👤 ${task.responsible}</span>
@@ -69,7 +76,7 @@ function renderDashboard() {
       buyContainer.innerHTML = `<div class="empty-state">✅<p>Kein dringender Kaufbedarf.</p></div>`;
     } else {
       buyContainer.innerHTML = urgent.map(entry => `
-        <div class="card" style="margin-bottom:10px">
+        <div class="card" style="margin-bottom:10px;padding:12px">
           <div class="flex justify-between items-center">
             <strong>${entry.task.name}</strong>
             <span class="text-sm text-muted">${urgencyLabel(entry.date)}</span>
@@ -81,6 +88,7 @@ function renderDashboard() {
                 <span><strong>${needed} ${item.unit}</strong> ${item.name}</span>
               </div>`).join('')}
           </div>
+          <button class="btn-ghost btn-sm" onclick="location.href='inventory.html'" style="margin-top:6px">📦 Bestand prüfen</button>
         </div>`).join('');
     }
   }
