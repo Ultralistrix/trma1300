@@ -7,7 +7,7 @@ import java.sql.SQLException;
 
 public class ReadDatabase {
     public static void main() {
-        String jdbcUrl = "jdbc:sqlite:./trma1300/java/src/resources/trmadatabase.db";
+        String jdbcUrl = "jdbc:sqlite:java/src/main/resources/trmadatabase.db";
 
         try {
             Connection connection = DriverManager.getConnection(jdbcUrl);
