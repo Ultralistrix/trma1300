@@ -11,7 +11,6 @@ function renderTimeline() {
   if (plan.length === 0) {
     container.innerHTML = `
       <div class="empty-state">
-        ✅
         <p>Kein Kaufbedarf erkannt. Alle Aufgaben sind mit ausreichend Inventar versorgt.</p>
         <button class="btn-primary" onclick="location.href='tasks.html'" style="margin-top:12px">Aufgaben anzeigen</button>
       </div>`;
@@ -26,7 +25,7 @@ function renderTimeline() {
 
     const itemsHTML = entry.itemsToBuy.map(({ item, needed, currentStock, minStock }) => `
       <div class="timeline-buy-item">
-        <span>📦</span>
+        <span></span>
         <span><strong>${needed} ${item.unit}</strong> ${item.name} kaufen</span>
         <span class="text-muted" style="margin-left:auto">Bestand: ${currentStock} ${item.unit} ${currentStock <= minStock ? '⚠️' : ''}</span>
       </div>`).join('');
